@@ -21,6 +21,15 @@ const schema = new mongoose.Schema({
         },
             msg:'invalid email format'
         }
+    },
+    companies: {
+        type: [{ type: String, ref: 'Company' }],
+        //select: false
+        //default:[]
+    },
+    __v: {
+      type: Number,
+      select: false
     }
 });      
 
