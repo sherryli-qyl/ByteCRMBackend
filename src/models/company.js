@@ -15,14 +15,8 @@ const schema = new mongoose.Schema({
 
     description:{
         type: String,
-        default: 'this is default information'
+        required: true
     },
-    
-    contacts: {
-        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Contact' }],
-        //select: false
-        //default:[]
-    },   
     __v:{
         type: Number,
         select: false
