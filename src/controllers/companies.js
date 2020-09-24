@@ -1,21 +1,8 @@
 const Company = require ('../models/company');
-const Joi = require('joi');
-
+const Contact = require ('../models/contact');
 
 async function addCompany(req, res) {
     const { name, code, description } = req.body;
-    // const schema = Joi.object({
-    //   name:Joi.string().min(2).max(10).required(),
-    //   code:Joi.string().regex(/^[a-zA-z0-9]+$/)
-    //   .required(),//require ask for the string is true
-    //   description: Joi.string()
-    // })
-    // const data = await schema.validateAsync(req.body, 
-    //   {allowUnknown: true, 
-    //     stripUnkown: true
-    //   }
-    //   )
-
     const company = new Company({
       name,
       code,
@@ -27,16 +14,17 @@ async function addCompany(req, res) {
 
 async function getCompany(req, res){
     const {id: code } = req.params;
-    const company = await Company.findById(code).exec();
+    const company = await Company.findById(code)
+    .populate('contacts')
+    .exec();
     if (!company){
         return res.status(404).json('company not found');
     }
     return res.json(company);
-
 }
 
 async function getAllCompanies(req, res){
-   const companies = await Company.find().exec().exec();
+   const companies = await Company.find().exec();
    return res.json(companies);
 }
 
@@ -55,7 +43,7 @@ async function updateCompany(req, res) {
       return res.status(404).json('Company not found');
     }
     return res.json(newCompany);
-  }
+  };
 
 async function deleteCompany(req, res){
     const { id: code } = req.params;
@@ -63,9 +51,42 @@ async function deleteCompany(req, res){
     if (!company) {
         return res.status(404).json('company not found');
     }
-    //return res.sendStatus(204);
     return res.status(204).json(company);
+};
 
+async function addContact (req, res){
+  const {code, id} = req.params;
+  const company = await Company.findById(code).exec();
+  const contact = await Contact.findById(id).exec();
+
+  if (!contact||!company){
+    return res.status(404).json('contact or company not exist');
+  }
+  company.contacts.addToSet(contact._id);
+  contact.companies.addToSet(company._id);
+
+  await company.save();
+  await contact.save();
+  return res.json(company);
+};
+
+async function removeContact (req, res){
+  const {code, id} = req.params;
+  const company = await Company.findById(code).exec();
+  const contact = await Contact.findById(id).exec();
+
+  if (!contact||!company) {
+    return res.status(404).json('contact or company not exist');
+  }
+      //clean refs
+      await Contact.updateMany({
+        companies: company._id}, {
+        $pull: {
+          companies: company._id
+        }
+      }).exec();
+  await company.save();
+  return res.status(202);
 }
 
 module.exports = {
@@ -73,5 +94,7 @@ module.exports = {
     getCompany,
     getAllCompanies,
     updateCompany,
-    deleteCompany
+    deleteCompany,
+    addContact,
+    removeContact
 }
