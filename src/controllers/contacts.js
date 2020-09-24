@@ -97,7 +97,7 @@ if (!contact || !company) {
 }
 
 await Company.updateMany(
-    {_id: {$in: contact.companies}} ,// {contacts: contact._id},
+    {contacts: contact._id},//{_id: {$in: contact.companies}} ,
     {
         $pull: {
             contacts: contact._id
