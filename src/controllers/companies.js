@@ -13,7 +13,7 @@ async function addCompany(req, res) {
   }
 
 async function getCompany(req, res){
-    const {id: code } = req.params;
+    const {code} = req.params;
     const company = await Company.findById(code)
     .populate('contacts')
     .exec();
@@ -29,7 +29,7 @@ async function getAllCompanies(req, res){
 }
 
 async function updateCompany(req, res) {
-    const { id: code } = req.params;
+    const { code } = req.params;
     const { name, description } = req.body;
     const newCompany = await Company.findByIdAndUpdate(
       code,
@@ -46,7 +46,7 @@ async function updateCompany(req, res) {
   };
 
 async function deleteCompany(req, res){
-    const { id: code } = req.params;
+    const { code } = req.params;
     const company = await Company.findByIdAndDelete(code).exec();
     if (!company) {
         return res.status(404).json('company not found');
@@ -79,8 +79,9 @@ async function removeContact (req, res){
     return res.status(404).json('contact or company not exist');
   }
       //clean refs
-      await Contact.updateMany({
-        companies: company._id}, {
+      await Contact.updateMany(
+        {companies: company._id}, 
+        {
         $pull: {
           companies: company._id
         }
