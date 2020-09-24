@@ -1,0 +1,44 @@
+SQL
+structured query language
+
+mssql
+oracle
+db2
+postgresql
+mysql
+sqlite
+mariadb
+
+
+NO-SQL
+firebase
+mongodb
+cassandra
+redis
+
+document-oriented -> mongodb
+key-value -> redis
+column-family -> cassandra
+graph-oriented -> neo4j
+
+humongous
+replica set
+sharding
+
+database admin
+
+client
+mongodb compass - GUI
+mongo shell  - CLI
+script
+
+
+binary json
+
+operator
+query operator
+update operator
+
+
+projection
+
