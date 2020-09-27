@@ -3,10 +3,10 @@ const express = require('express');
 const router = express.Router();
 
 const contactRoute = require('./routes/contacts.js');
-
 const companyRoute = require('./routes/companies.js');
-
 const userRoute = require('./routes/users');
+
+const authGuard = require('./middleware/authGuard');
 
 const authRoute = require('./routes/auth');
 

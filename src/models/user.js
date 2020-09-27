@@ -44,6 +44,10 @@ const schema = new mongoose.Schema({
   },
 });
 
+//instance method and static method
+//Model.static
+//document.instance
+
 schema.methods.hashPassword = async function () {
   this.password = await bcrypt.hash(this.password, 12);
 };
