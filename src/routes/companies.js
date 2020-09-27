@@ -18,7 +18,7 @@ router.put('/:code',updateCompany);
 router.delete('/:code', deleteCompany); 
 
 router.post('/:code/contacts/:id', addContact);
-router.post('/:code/contacts/:id', removeContact);
+router.delete('/:code/contacts/:id', removeContact);
 
 
 module.exports = router;
