@@ -1,17 +1,16 @@
 const express = require('express');
 
-const router = express.Router();
-
-const contactRoute = require('./routes/contacts.js');
-const companyRoute = require('./routes/companies.js');
+const contactRoute = require('./routes/contacts');
+const companyRoute = require('./routes/companies');
 const userRoute = require('./routes/users');
+const authRoute = require('./routes/auth');
 
 const authGuard = require('./middleware/authGuard');
 
-const authRoute = require('./routes/auth');
+const router = express.Router();
 
-router.use('/contacts', contactRoute);
-router.use('/companies', companyRoute);
+router.use('/contacts', authGuard, contactRoute);
+router.use('/companies', authGuard, companyRoute);
 router.use('/users', userRoute);
 router.use('/auth', authRoute);
 

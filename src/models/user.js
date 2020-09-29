@@ -54,9 +54,12 @@ schema.methods.hashPassword = async function () {
 
 schema.methods.validatePassword = async function (password) {
   //return true or false
-  const validatePassword = await bcrypt.compare(password, this.password);
-  return validatePassword;
+  const validPassword = await bcrypt.compare(password, this.password);
+  return validPassword;
 };
+
+// lifecycle hook
+// pre save hook
 
 const model = mongoose.model('User', schema);
 module.exports = model;
