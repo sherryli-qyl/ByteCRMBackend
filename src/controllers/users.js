@@ -12,7 +12,7 @@ async function addUser(req, res) {
     firstname,
     lastname,
     email,
-    password,
+    password
   });
 
   await user.hashPassword();
@@ -21,4 +21,9 @@ async function addUser(req, res) {
   return res.json({ firstname, lastname, email, token});
 }
 
-module.exports = { addUser };
+module.exports = { 
+  addUser 
+};
+
+// POST /api/users/login
+// POST /api/auth

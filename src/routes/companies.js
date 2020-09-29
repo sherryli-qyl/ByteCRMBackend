@@ -1,15 +1,17 @@
 const express = require('express');
 
-const router = express.Router();
 
-const {addCompany, 
+const {
+       addCompany, 
        getCompany, 
        getAllCompanies, 
        updateCompany, 
        deleteCompany,
        addContact,
        removeContact
-    } = require('../controllers/Companies');//导入功能
+    } = require('../controllers/companies');//导入功能
+
+const router = express.Router();
 
 router.get('/', getAllCompanies);
 router.get('/:code', getCompany);

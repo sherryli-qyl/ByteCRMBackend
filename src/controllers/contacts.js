@@ -12,13 +12,13 @@ async function addContact(req, res){
 
    await contact.save();
     
-    return res.json(contact);
+   return res.json(contact);
 }
 
 async function getContact(req, res){
     const {id} =req.params;
     const contact = await Contact.findById(id)
-    .populate('companies')
+    .populate('companies', 'code name')
     .exec();
     if (!contact) {
         return res.status(404).json('contact not found');
@@ -26,9 +26,21 @@ async function getContact(req, res){
     return res.json(contact); 
 }
 
+// api/Contacts?fields=courses;
 async function getAllContacts(req, res){
-    const contacts= await Contact.find().exec();
+    const {page=1, pageSize=10, q='', fields} = req.query; //per_page or camelCase
+    // const limit = Number(pageSize) ||10
+    //fields = courses
+    //[courses]
+    //` +courses`
+    const limit = Math.max(pageSize * 1, 10);
+    const skip = (Math.max(page * 1, 1) - 1) * limit;
+    const contacts = await Contact.find().limit(limit).skip(skip).exec();
+    // Contact.find({$or:[{firstName: {$regex: q}},{lastName: {$regex:q}}]})
+    // new RegExp(req.query.q);
+    // Contact.find().select(select)
     return res.json(contacts);
+    // return res.json({ data: contacts, pagination: totalCount });
 }
 
 async function updateContact(req, res){
@@ -38,7 +50,7 @@ async function updateContact(req, res){
        id,
         {firstName, lastName, email},
         {new : true}
-    );
+    ).exec();
     if(!newContact){
         return res.status(404).json('contact not found');
     }
@@ -51,13 +63,21 @@ async function deleteContact(req, res){
     if (!contact){
         return res.status(404).json('contact not found');
     } 
+    await Company.updateMany(
+        { _id: { $in: contact.companies } }, //{ contacts: contact._id },
+        {
+          $pull: {
+            contacts: contact._id
+          }
+        }
+      ).exec();
     return res.status(200).json(contact);
 };
 
 async function addCompany(req, res){
 const {id, code} = req.params;
-const contact = await Contact.findById(id).exec();
-const company = await Company.findById(code).exec();
+const contact = await Contact.findById(id).select('companies').exec();
+const company = await Company.findById(code).select('contacts').exec();
 
 if (!contact||!company) {
     return res.status(404).json('contact or company not exist');
@@ -89,25 +109,21 @@ return res.json(contact);
 async function removeCompany(req, res){
     const {id, code} = req.params;
 // find company,contact
-    const contact = await Contact.findById(id).exec();
-    const company = await Company.findById(code).exec();
+    const contact = await Contact.findById(id).select('companies').exec();
+    const company = await Company.findById(code).select('contacts').exec();
 //check company/contact whether exist
-if (!contact || !company) {
-    return res.status(404).json('contact or company not exist');
-}
 
-await Company.updateMany(
-    {contacts: contact._id},//{_id: {$in: contact.companies}} ,
-    {
-        $pull: {
-            contacts: contact._id
-    }
-}
-).exec()
-//if (contact.company.map(i => i.toString()).includes(company._id))
-//Todo:remove contact from company
-await contact.save();
-return res.status(200);
+if (!contact||!company) {
+    return res.status(404).json('contact or company not exist');
+  }
+      //clean refs
+      company.contacts.pull(contact._id);
+      contact.companies.pull(company._id);
+
+  await company.save();
+  await contact.save();
+  return res.status(200).json(contact);
+ // return res.sendStatus(200);
 }
 
 module.exports = {
