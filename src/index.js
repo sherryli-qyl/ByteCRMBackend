@@ -20,7 +20,7 @@ app.use(cors());
 app.use (express.json());//get data from req.body needs app.use(express.json())
 
 app.get('/', (req, res) => {
-  return res.json('welcome to jr cms')
+  return res.json('welcome to byteCRM')
 });
 
 app.use('/api', routes);

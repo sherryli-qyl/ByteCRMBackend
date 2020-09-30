@@ -1,4 +1,3 @@
-
 const mongoose = require ('mongoose'); 
 
 const schema = new mongoose.Schema({ 
@@ -13,17 +12,41 @@ const schema = new mongoose.Schema({
         required: true
     },
 
-    description:{
+    company_owner:{
         type: String,
-        default: 'this is default information'
+        required: true
     },
     
-    contacts: 
-    //{type: 
-    [{ type: mongoose.Schema.Types.ObjectId, ref: 'Contact' }],
-        //select: false
-        //default:[]
-    //},   
+    creat_date:{
+        type: String,
+        required: true
+    },
+
+    lastactivity_date:{
+        type: String,
+        required: true
+    },
+
+    phone_number:{
+        type: String,
+        required: true
+    }, 
+    
+    city:{
+        type: String,
+        required: true
+    },
+
+    country:{
+        type: String,
+        required: true
+    },
+
+    industry:{
+        type: String,
+        required: true
+    },
+    
     __v:{
         type: Number,
         select: false
@@ -42,6 +65,6 @@ const schema = new mongoose.Schema({
 //     return 'virtual code';
 // });
 
-const model = mongoose.model('Company',schema); 
+const model = mongoose.model('Companylist',schema); 
 
 module.exports = model; 
