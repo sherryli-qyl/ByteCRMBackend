@@ -33,7 +33,7 @@ const schema = new mongoose.Schema(
         },
         companies:
             //{type: 
-            [{ type: String, ref: 'Company' }],
+            [{ type: String, ref: 'Companybasic' }],
         //select: false
         //default:[]
         //},
@@ -44,5 +44,5 @@ const schema = new mongoose.Schema(
     }
 );
 
-const model = mongoose.model('Contact', schema);
+const model = mongoose.model('Contactbasic', schema);
 module.exports = model; 
