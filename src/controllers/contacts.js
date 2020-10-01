@@ -3,10 +3,11 @@ const Company = require('../models/company');
 
 
 async function addContact(req, res) {
-    const { firstName, lastName, email, jobTitle, phoneNo, lifeCycle } = req.body;
+    const { firstName, lastName, email, jobTitle, phoneNo, lifeCycle,contactOwner } = req.body;
     const contact = new Contact({
         firstName,
         lastName,
+        contactOwner,
         email,
         jobTitle,
         phoneNo,
@@ -37,10 +38,10 @@ async function getAllContacts(req, res) {
 
 async function updateContact(req, res) {
     const { id } = req.params;
-    const { firstName, lastName, phoneNo, lifeCycle, jobTitle } = req.body;
+    const { firstName, lastName, phoneNo, lifeCycle, jobTitle,contactOwner} = req.body;
     const newContact = await Contact.findByIdAndUpdate(
         id,
-        { firstName, lastName, phoneNo, lifeCycle, jobTitle },
+        { firstName, lastName, phoneNo, lifeCycle, jobTitle, contactOwner},
     ).exec();
     if (!newContact) {
         return res.status(404).json('contact not found');
