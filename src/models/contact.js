@@ -11,6 +11,15 @@ const schema = new mongoose.Schema(
             type: String,
             required: true
         },
+        jobTitle: {
+            type: String,
+        },
+        phoneNo: {
+            type: Number,
+        },
+        lifeCycle:{
+            type: String,
+        },
         email: {
             type: String,
             required: true,
