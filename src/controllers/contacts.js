@@ -46,7 +46,6 @@ async function getAllContacts(req, res){
 
 async function updateContact(req, res){
     const {id} =req.params;
-    console.log("your id is " + id);
     const {firstName,lastName,phoneNo,lifeCycle,jobTitle} = req.body;
     const newContact = await Contact.findByIdAndUpdate(
        id,
@@ -83,7 +82,7 @@ const company = await Company.findById(code).select('contacts').exec();
 if (!contact||!company) {
     return res.status(404).json('contact or company not exist');
 }
-contact.companies.addToSet(company._id);
+contact.company.addToSet(company);
 company.contacts.addToSet(contact._id);
 
 await contact.save();

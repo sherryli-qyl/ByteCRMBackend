@@ -1,22 +1,6 @@
 const Company = require ('../models/company');
 const Contact = require ('../models/contact');
 
-// const Joi = require('joi');
-// express-async-errors
-// function tryCatch(routeHandler) {
-//   return (req, res, next) => {
-//     try {
-//       routeHandler(req, res, next);
-//     } catch (e) {
-//       next(e);
-//     }
-//   }
-// }
-
-// const asyncHandler = (fn) => (req, res, next) => {
-//   return Promise.resolve(fn(req, res, next)).catch(next);
-// };
-
 async function addCompany(req, res) {
     const { name, code, description } = req.body;
     const existingCompany = await Company.findById(code).exec();
@@ -56,12 +40,9 @@ async function updateCompany(req, res) {
       code,
       { name, description },
       {
-        new: true // return the updated object
-        // runValidators: true // run validator against new value
+        new: true,
       }
     ).exec();
-    //
-  // const company = await Company.findById(code);
     if (!company) {
       return res.status(404).json('Company not found');
     }
@@ -75,8 +56,6 @@ async function deleteCompany(req, res){
     if (!company) {
         return res.status(404).json('company not found');
     }
-  // clean refs
-  // db.collections.updateMany
   await Contact.updateMany(
     { companies: company._id },
     {

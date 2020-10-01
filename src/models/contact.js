@@ -40,9 +40,9 @@ const schema = new mongoose.Schema(
                 msg: 'Invalid email format'
             }
         },
-        companies:
+        company:
             //{type: 
-            [{ type: String, ref: 'Company' }],
+            { type: String, ref: 'Company' },
         //select: false
         //default:[]
         //},
