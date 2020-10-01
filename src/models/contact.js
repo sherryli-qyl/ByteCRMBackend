@@ -41,11 +41,11 @@ const schema = new mongoose.Schema(
             }
         },
         company:
-            //{type: 
-            { type: String, ref: 'Company' },
-        //select: false
-        //default:[]
-        //},
+            {type: String, ref: 'Company'},
+            
+        contactOwner:
+            {type:String,ref:'User'},
+
         __v: {
             type: Number,
             select: false
