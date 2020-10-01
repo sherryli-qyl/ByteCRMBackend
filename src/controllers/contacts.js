@@ -12,7 +12,6 @@ async function addContact(req, res){
         phoneNo,
         lifeCycle,
     });
-
    await contact.save();
    return res.json(contact);
 }
@@ -26,7 +25,7 @@ async function getContact(req, res){
     if (!contact) {
         return res.status(404).json('contact not found');
     }
-    return res.json(contact); 
+    return res.status(200).json(contact); 
 }
 
 // api/Contacts?fields=courses;
@@ -42,8 +41,7 @@ async function getAllContacts(req, res){
     // Contact.find({$or:[{firstName: {$regex: q}},{lastName: {$regex:q}}]})
     // new RegExp(req.query.q);
     // Contact.find().select(select)
-    return res.json(contacts);
-    // return res.json({ data: contacts, pagination: totalCount });
+    return res.status(200).json(contacts); 
 }
 
 async function updateContact(req, res){
