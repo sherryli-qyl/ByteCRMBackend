@@ -13,9 +13,39 @@ const schema = new mongoose.Schema({
         required: true
     },
 
-    description:{
+    company_owner:{
         type: String,
-        default: 'this is default information'
+        required: true
+    },
+    
+    creat_date:{
+        type: String,
+        required: true
+    },
+
+    lastactivity_date:{
+        type: String,
+        required: true
+    },
+
+    phone_number:{
+        type: String,
+        required: true
+    }, 
+    
+    city:{
+        type: String,
+        required: true
+    },
+
+    country:{
+        type: String,
+        required: true
+    },
+
+    industry:{
+        type: String,
+        required: true
     },
     
     contacts: 

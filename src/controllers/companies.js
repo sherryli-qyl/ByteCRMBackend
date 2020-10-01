@@ -18,16 +18,33 @@ const Contact = require ('../models/contact');
 // };
 
 async function addCompany(req, res) {
-    const { name, code, description } = req.body;
+    const { 
+      name,
+      code,
+      company_owner,
+      creat_date,
+      lastactivity_date,
+      phone_number,
+      city,
+      country,
+      industry    
+    } = req.body;
     const existingCompany = await Company.findById(code).exec();
     if (existingCompany) {
       return res.status(409).json ('Duplicate course code');
     }
 
-    const company = new Company({
+    const company = new Company(
+    {
       name,
       code,
-      description
+      company_owner,
+      creat_date,
+      lastactivity_date,
+      phone_number,
+      city,
+      country,
+      industry
     });
     await company.save();
     return res.status(201).json(company);
@@ -51,10 +68,28 @@ async function getAllCompanies(req, res){
 
 async function updateCompany(req, res) {
     const { code } = req.params;
-    const { name, description } = req.body;
+    const { 
+      name,
+      company_owner,
+      creat_date,
+      lastactivity_date,
+      phone_number,
+      city,
+      country,
+      industry
+    } = req.body;
     const company = await Company.findByIdAndUpdate(
       code,
-      { name, description },
+      { 
+        name,
+        company_owner,
+        creat_date,
+        lastactivity_date,
+        phone_number,
+        city,
+        country,
+        industry
+      },
       {
         new: true // return the updated object
         // runValidators: true // run validator against new value
