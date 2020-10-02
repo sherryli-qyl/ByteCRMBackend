@@ -10,8 +10,10 @@ const authGuard = require('./middleware/authGuard');
 
 const router = express.Router();
 
-router.use('/contacts', authGuard, contactRoute);
-router.use('/companies', authGuard, companyRoute);
+router.use('/contacts',contactRoute);
+router.use('/companies',companyRoute);
+// router.use('/contacts',authGuard,contactRoute);
+// router.use('/companies',authGuard,companyRoute);
 router.use('/users', userRoute);
 router.use('/auth', authRoute);
 router.use('/notes', noteRoute);
