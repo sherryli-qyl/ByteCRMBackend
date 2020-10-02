@@ -1,3 +1,4 @@
+
 const mongoose = require ('mongoose'); 
 
 const schema = new mongoose.Schema({ 
@@ -47,6 +48,12 @@ const schema = new mongoose.Schema({
         required: true
     },
     
+    contacts: 
+    //{type: 
+    [{ type: mongoose.Schema.Types.ObjectId, ref: 'Contact' }],
+        //select: false
+        //default:[]
+    //},   
     __v:{
         type: Number,
         select: false
@@ -65,6 +72,6 @@ const schema = new mongoose.Schema({
 //     return 'virtual code';
 // });
 
-const model = mongoose.model('Companylist',schema); 
+const model = mongoose.model('Company',schema); 
 
 module.exports = model; 
