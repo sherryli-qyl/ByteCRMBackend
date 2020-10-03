@@ -5,6 +5,7 @@ const companyRoute = require('./routes/companies');
 const userRoute = require('./routes/users');
 const authRoute = require('./routes/auth');
 const noteRoute = require('./routes/notes');
+const callRoute = require('./routes/calls');
 
 const authGuard = require('./middleware/authGuard');
 
@@ -15,5 +16,6 @@ router.use('/companies', authGuard, companyRoute);
 router.use('/users', userRoute);
 router.use('/auth', authRoute);
 router.use('/notes', noteRoute);
+router.use('/calls', callRoute);
 
 module.exports = router;
