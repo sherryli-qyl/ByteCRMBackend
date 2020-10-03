@@ -45,7 +45,7 @@ async function updateCall(req, res) {
 async function deleteCall(req, res) {
   const { id } = req.params;
 
-  const call = await await Call.findByIdAndDelete(id);
+  const call = await Call.findByIdAndDelete(id);
   if (!call) {
     return res.status(404).json('call not found');
   }
