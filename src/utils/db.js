@@ -11,8 +11,9 @@ exports.connectToDB = () => {
         } = process.env;
         let connectionString;
         if(NODE_ENV === 'production'){
-            //if(DB_USER && DB_PASSWORD)
+            if(DB_USER && DB_PASSWORD)
             connectionString = `mongodb+srv://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_DATABASE}`;
+            // connectionString = `mongodb://localhost:27017/jr-cms-105`;
         } else {
             const connectionString = `mongodb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}`;
         }

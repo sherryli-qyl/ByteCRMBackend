@@ -67,5 +67,6 @@ const schema = new mongoose.Schema({
 schema.virtual('name').get(function () {
     return this.firstName + ' ' + this.lastName;
 })
+
 const model = mongoose.model("ContactModel", schema);
 module.exports = model;

@@ -38,6 +38,7 @@ const schema = new mongoose.Schema({
       msg: 'Invalid password',
     },
   },
+
   __v: {
     type: Number,
     select: false,
