@@ -1,72 +1,71 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
-const testPhoneNum = require("../utils/testPhoneNum");
 
-const schema = new mongoose.Schema({
-  _id: {
-    type: Number,
-    required: true,
-    unique: true,
-  },
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    validate: {
-      validator: (email) => {
-        // 如果error有值，则校验失败
-        return !Joi.string().email().validate(email).error;
-      },
-      msg: "Invalid email format",
+const schema = new mongoose.Schema(
+  {
+    _id: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
+    firstName: {
+      type: String,
+      required: true,
+      // select: false,
+    },
+    lastName: {
+      type: String,
+      required: false,
+      // select: false,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    phoneNumber: {
+      type: String,
+      required: false,
+    },
+    contactOwner: {
+      type: String,
+      required: false,
+    },
+    lastActivityDate: {
+      type: Date,
+      required: false,
+    },
+    createDate: {
+      type: Date,
+      required: false,
+    },
+    leadStatus: {
+      type: String,
+      required: false,
+    },
+    company: { type: String, ref: "Company" },
+    jobTitle: {
+      type: String,
+      required: false
+    },
+    lifeCycle: {
+      type: String,
+      required: false,
+    },
+    __v: {
+      type: Number,
+      select: false,
     },
   },
-  phoneNumber: {
-    type: String,
-    required: false,
-    validate: {
-      validator: (phoneNum) => {
-        return testPhoneNum(phoneNum);
-      },
-      msg: "Invalid phone number format",
-    },
-  },
-  contactOwner: {
-    type: String,
-    required: false,
-  },
-  lastActivityDate: {
-    type: Date,
-    required: false,
-  },
-  leadStatus: {
-    type: String,
-    required: false,
-  },
-  companies: [{ type: String, ref: "Company" }],
-  __v: {
-    type: Number,
-    select: false,
-  },
-},
-{
+  {
     toJSON: {
-        virtuals: true,
+      timestamps: true,
     },
-    timestamps: true,
-    firstName: false,
-    lastName: false,
-});
+  }
+);
 
-schema.virtual('name').get(function () {
-    return this.firstName + ' ' + this.lastName;
-})
+// schema.virtual("name").get(function () {
+//   return this.firstName + " " + this.lastName;
+// });
 
-const model = mongoose.model("ContactModel", schema);
+const model = mongoose.model("Contact", schema);
 module.exports = model;
