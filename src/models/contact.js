@@ -1,71 +1,55 @@
-const mongoose = require("mongoose");
-const Joi = require("joi");
+const mongoose = require('mongoose');
+const Joi = require('joi');
 
 const schema = new mongoose.Schema(
-  {
-    _id: {
-      type: Number,
-      required: true,
-      unique: true,
-    },
-    firstName: {
-      type: String,
-      required: true,
-      // select: false,
-    },
-    lastName: {
-      type: String,
-      required: false,
-      // select: false,
-    },
-    email: {
-      type: String,
-      required: true,
-    },
-    phoneNumber: {
-      type: String,
-      required: false,
-    },
-    contactOwner: {
-      type: String,
-      required: false,
-    },
-    lastActivityDate: {
-      type: Date,
-      required: false,
-    },
-    createDate: {
-      type: Date,
-      required: false,
-    },
-    leadStatus: {
-      type: String,
-      required: false,
-    },
-    company: { type: String, ref: "Company" },
-    jobTitle: {
-      type: String,
-      required: false
-    },
-    lifeCycle: {
-      type: String,
-      required: false,
-    },
-    __v: {
-      type: Number,
-      select: false,
-    },
-  },
-  {
-    toJSON: {
-      timestamps: true,
-    },
-  }
+    {
+        firstName: {
+            type: String,
+            required: true
+        },
+
+        lastName: {
+            type: String,
+            required: true
+        },
+        jobTitle: {
+            type: String,
+        },
+
+        phoneNo: {
+            type: Number,
+        },
+
+        lifeCycle:{
+            type: String,
+        },
+
+        contactOwner:{
+            type: String,
+        },
+
+        email: {
+            type: String,
+            required: true,
+            validate: {
+                validator: (email) => {
+                    return !Joi.string().email().validate(email).error;
+                },
+                msg: 'Invalid email format'
+            }
+        },
+        company:
+            {type: String, ref: 'Company'},
+
+        // contactOwner:
+        //     {type:String,ref:'User'},
+
+        __v: {
+            type: Number,
+            select: false
+        }
+    }
 );
 
-// schema.virtual("name").get(function () {
-//   return this.firstName + " " + this.lastName;
-// });
-
-const model = mongoose.model("Contact", schema);
-module.exports = model;
+const model = mongoose.model('Contact', schema);
+module.exports = model; 
