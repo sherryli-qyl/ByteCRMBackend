@@ -46,16 +46,18 @@ async function addContact(req, res) {
           /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         )
         .required(),
-      phoneNumber: Joi.string().pattern(
-        new RegExp(
-          /^\({0,1}((0|\+61)(2|4|3|7|8)){0,1}\){0,1}(|-){0,1}[0-9]{2}(|-){0,1}[0-9]{2}(|-){0,1}[0-9]{1}(|-){0,1}[0-9]{3}$/
-        )
+      phoneNumber: Joi.string().regex(
+        /^\({0,1}((0|\+61)(2|4|3|7|8)){0,1}\){0,1}(|-){0,1}[0-9]{2}(|-){0,1}[0-9]{2}(|-){0,1}[0-9]{1}(|-){0,1}[0-9]{3}$/
       ),
       contactOwner: Joi.string(),
       company: Joi.string(),
-      lastActivityDate: Joi.string(),
+      lastActivityDate: Joi.string().regex(
+        /^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d$/
+      ),
       leadStatus: Joi.string(),
-      createDate: Joi.string(),
+      createDate: Joi.string().regex(
+        /^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d$/
+      ),
       jobTitle: Joi.string(),
       lifeCycle: Joi.string(),
     });
@@ -155,9 +157,13 @@ async function updateContact(req, res) {
       ),
       contactOwner: Joi.string(),
       company: Joi.string(),
-      lastActivityDate: Joi.string(),
+      lastActivityDate: Joi.string().regex(
+        /^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d$/
+      ),
       leadStatus: Joi.string(),
-      createDate: Joi.string(),
+      createDate: Joi.string().regex(
+        /^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d$/
+      ),
       jobTitle: Joi.string(),
       lifeCycle: Joi.string(),
     });
@@ -168,7 +174,7 @@ async function updateContact(req, res) {
     });
     request = {
       _id: id,
-      ...request
+      ...request,
     };
     const newContact = await Contact.findByIdAndUpdate(id, request, {
       new: true,
