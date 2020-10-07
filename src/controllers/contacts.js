@@ -19,7 +19,6 @@ async function addContact(req, res) {
 
 async function getContact(req, res) {
     const { id } = req.params;
-    console.log("your id is " + id);
     const contact = await Contact.findById(id).populate('company','name').exec();
     if (!contact) {
         return res.status(404).json('contact not found');

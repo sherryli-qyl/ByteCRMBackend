@@ -7,6 +7,7 @@ const authRoute = require('./routes/auth');
 const noteRoute = require('./routes/notes');
 const callRoute = require('./routes/calls');
 const taskRoute = require('./routes/tasks');
+const emailRoute = require('./routes/emails');
 
 const authGuard = require('./middleware/authGuard');
 
@@ -21,5 +22,5 @@ router.use('/auth', authRoute);
 router.use('/notes', noteRoute);
 router.use('/calls', callRoute);
 router.use('/tasks', taskRoute);
-
+router.use('/emails',emailRoute);
 module.exports = router;
