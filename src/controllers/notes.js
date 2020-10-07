@@ -1,15 +1,19 @@
 const Note = require('../models/note');
 
 async function addNote(req, res) { 
-	const { content, author, comments } = req.body;
+	const { relatedTo, content, createdBy, comments, type, isDeleted } = req.body;
 	const note = new Note({
-		content,
-		author,
-		comments
+    relatedTo,
+    content,
+		createdBy,
+    comments,
+    type,
+    isDeleted,
 	});
 	await note.save();
 	return res.json(note);
 }
+
 
 async function getNote(req, res) { 
 	const { id } = req.params;
@@ -20,9 +24,21 @@ async function getNote(req, res) {
 	return res.json(note);
 }
 
+
+async function getNoteByRelatedToId(req, res) { 
+  const { id } = req.params;
+  console.log("your contact id is " + id);
+  const notes = await Note.find({relatedTo:{$eq: id}}).exec();
+	if (!notes) {
+		return res.status(404).json('notes not found');
+	}
+	return res.status(200).json(notes);
+}
+
+
 async function getAllNotes(req, res) { 
 	const notes = await Note.find().exec();
-	return res.json(notes);
+	return res.status(200).json(notes);
 }
 
 
@@ -39,8 +55,9 @@ async function updateNote(req, res) {
 	if (!newNote) {
 		return res.status(404).json('notes not found');
 	}
-	return res.json(newNote);
+	return res.status(202).json(newNote);
 }
+
 
 async function deleteNote(req, res) { 
 	const { id } = req.params;
@@ -55,7 +72,8 @@ async function deleteNote(req, res) {
 
 module.exports = {
 	addNote,
-	getNote,
+  getNote,
+  getNoteByRelatedToId,
 	getAllNotes,
 	updateNote,
 	deleteNote
