@@ -30,7 +30,7 @@ async function getAllEmailLogs(req, res) {
 
 async function getEmailsByContactId(req, res) {
     const { id } = req.params;
-    const emails = await Contact.findById(id).populate('emailLogs').exec();
+    const emails = await Email.find({contacts:id}).exec();
     return res.status(200).json(emails);
 }
 
