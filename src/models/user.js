@@ -43,11 +43,22 @@ const schema = new mongoose.Schema({
     type: Number,
     select: false,
   },
-});
+},
+  {
+    toJSON: {
+      virtuals: true
+    }
+  });
 
 //instance method and static method
 //Model.static
 //document.instance
+
+schema.virtual('fullName').get(function () {
+  const fullName = `${this.firstName} ${this.lastName}`;
+  return fullName;
+
+});
 
 schema.methods.hashPassword = async function () {
   this.password = await bcrypt.hash(this.password, 12);

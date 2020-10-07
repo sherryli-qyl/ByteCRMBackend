@@ -38,6 +38,9 @@ const schema = new mongoose.Schema(
                 msg: 'Invalid email format'
             }
         },
+
+        emailLogs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Email' }],
+
         company:
             {type: String, ref: 'Company'},
 
@@ -48,8 +51,19 @@ const schema = new mongoose.Schema(
             type: Number,
             select: false
         }
+    },
+    {
+        toJSON:{
+            virtuals:true
+        }
     }
 );
+
+schema.virtual('fullName').get(function(){
+     const fullName = `${this.firstName} ${this.lastName}`;
+    return fullName;
+
+});
 
 const model = mongoose.model('Contact', schema);
 module.exports = model; 
