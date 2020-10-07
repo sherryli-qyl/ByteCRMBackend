@@ -8,7 +8,8 @@ const schema = new mongoose.Schema(
     },
 
     relatedTo: {
-      type: mongoose.Schema.Types.ObjectId,
+      //type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: 'Contact',
     },
 
@@ -20,7 +21,6 @@ const schema = new mongoose.Schema(
 		author: {
 			//createdBy - user
 			type: String,
-			required: true
     },
 
     createdBy: {
