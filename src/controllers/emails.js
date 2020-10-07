@@ -34,6 +34,19 @@ async function getEmailsByContactId(req, res) {
     return res.status(200).json(emails);
 }
 
+async function updateEmail(req, res) {
+    const { id } = req.params;
+    const {date,time,description} = req.body;
+    const newEmail = await Email.findByIdAndUpdate(
+        id,
+        {date,time,description},
+    ).exec();
+    if (!newEmail) {
+        return res.status(404).json('email not found');
+    }
+    return res.status(202).json(newEmail);
+}
+
 
 async function addContacts(contactId,emailId) {
     const contact = await Contact.findById(contactId).exec();
@@ -46,7 +59,7 @@ async function addContacts(contactId,emailId) {
     ));
 };
 
-async function UpdateContacts(req,res) {
+async function updateContacts(req,res) {
     const {contactId,emailId} = req.params;
     const contact = await Contact.findById(contactId).exec();
     const email = await Email.findById(emailId).exec();
@@ -82,7 +95,8 @@ async function removeContacts(req,res) {
 module.exports = {
     logEmail,
     getAllEmailLogs,
-    UpdateContacts,
+    updateEmail,
+    updateContacts,
     removeContacts,
     getEmailsByContactId,
 }
