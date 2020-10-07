@@ -27,10 +27,8 @@ const emailSchema = new mongoose.Schema(
         required: true,
     },
 
-    contacts: {
-        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Contact' }],
-        select: false
-    },
+    contacts: [{type: mongoose.Schema.Types.ObjectId, ref: 'Contact' }],
+       
 
     user:{
         type: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},

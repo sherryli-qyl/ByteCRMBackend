@@ -35,7 +35,6 @@ async function getEmailsByContactId(req, res) {
 }
 
 
-
 async function addContacts(contactId,emailId) {
     const contact = await Contact.findById(contactId).exec();
     if (!contact) {
@@ -47,15 +46,33 @@ async function addContacts(contactId,emailId) {
     ));
 };
 
+async function UpdateContacts(req,res) {
+    const {contactId,emailId} = req.params;
+    const contact = await Contact.findById(contactId).exec();
+    const email = await Email.findById(emailId).exec();
+    if (!contact || !email) {
+        return res.status(404).json('contacts or email not exist');
+    }
+    contact.emailLogs.addToSet(emailId);
+    email.contacts.addToSet(contactId);
+    await contact.save();
+    await email.save();
+    return res.status(200).json(contact);
+};
+
+
 async function removeContacts(req,res) {  
     const {contactId,emailId} = req.params;
     const contact = await Contact.findById(contactId).exec();
-    if (!contact) {
-        const errorMeesage = res.status(404).json('contact not exist');
+    const email = await Email.findById(emailId).exec();
+    if (!contact || !email) {
+        const errorMeesage = res.status(404).json('contact or email not exist');
         return errorMeesage;
     }
     contact.emailLogs.pull(emailId);
+    email.contacts.pull(contactId);
     await contact.save();
+    await email.save();
     return res.status(200).json(contact);
 }
 
@@ -65,6 +82,7 @@ async function removeContacts(req,res) {
 module.exports = {
     logEmail,
     getAllEmailLogs,
+    UpdateContacts,
     removeContacts,
     getEmailsByContactId,
 }
