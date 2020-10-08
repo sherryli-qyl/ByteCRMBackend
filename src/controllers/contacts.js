@@ -38,7 +38,13 @@ async function serachContactByUserId(req,res){
             findContacts.push(contact[i]);
         }
     }
-    return res.status(200).json(findContacts);
+    if (findContacts.length >= 1){
+        return res.status(200).json(findContacts);
+    }
+    else{
+        return res.status(409).json("no user found");
+    }
+   
 }
 
 // api/Contacts?fields=courses;
