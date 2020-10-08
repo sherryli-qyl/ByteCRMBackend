@@ -71,26 +71,40 @@ async function updateContact(req, res) {
 
 async function deleteContact(req, res) {
     const { id } = req.params;
-    const contact = await Contact.findByIdAndDelete(id).exec();
-    const company = await Company.findById(contact.company).exec();
-    company.contacts.pull(contact._id);
-    await company.save();
-    return res.status(200).json(contact);
+    const contact = await Contact.findById(id).exec();
+    if (contact.company){
+        const company = await Company.findById(contact.company).exec();
+        company.contacts.pull(contact._id);
+        await company.save();
+    }
+    if (contact.contactOwner){
+        const user = await User.findById(contact.contactOwner).exec();
+        user.contacts.pull(contact._id);
+        await user.save();
+    }
+    const deleteContact = await Contact.findByIdAndDelete(id).exec();
+    return res.status(200).json(deleteContact);
 };
 
 async function updateUser(req,res){
     const { contactId, userId } = req.params;
     const contact = await Contact.findById(contactId).exec();
-    const user = await User.findById(userId).exec();
 
-    if (!contact || !user) {
-        return res.status(404).json('contact or user not exist');
+    if (!contact) {
+        return res.status(404).json('contact not exist');
     }
-
-    contact.contactOwner = user._id;
-    user.contacts.addToSet(contact._id);
+    if(contact.contactOwner){
+        const oldUser = await User.findById(contact.contactOwner).exec();
+        oldUser.contacts.pull(contact._id);
+        await oldUser.save();
+    }
+    
+    const newUser = await User.findById(userId).exec();
+    newUser.contacts.addToSet(contact._id);
+    contact.contactOwner = newUser._id;
+   
     await contact.save();
-    await user.save();
+    await newUser.save();
     return res.json(contact);
 };
 
