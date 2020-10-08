@@ -8,6 +8,7 @@ const noteRoute = require('./routes/notes');
 const callRoute = require('./routes/calls');
 const taskRoute = require('./routes/tasks');
 const emailRoute = require('./routes/emails');
+const meetingRoute = require('./routes/meetings');
 
 const authGuard = require('./middleware/authGuard');
 
@@ -23,4 +24,5 @@ router.use('/notes', noteRoute);
 router.use('/calls', callRoute);
 router.use('/tasks', taskRoute);
 router.use('/emails',emailRoute);
+router.use('/meetings',meetingRoute);
 module.exports = router;
