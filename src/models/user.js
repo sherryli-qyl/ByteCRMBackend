@@ -60,7 +60,7 @@ const schema = new mongoose.Schema({
 //document.instance
 
 schema.virtual('fullName').get(function () {
-  const fullName = `${this.firstName} ${this.lastName}`;
+  const fullName = `${this.firstname} ${this.lastname}`;
   return fullName;
 
 });
