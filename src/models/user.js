@@ -39,6 +39,11 @@ const schema = new mongoose.Schema({
     },
   },
 
+  contacts: [
+    {
+    type: mongoose.Schema.Types.ObjectId, ref: 'Contact'}
+  ],
+
   __v: {
     type: Number,
     select: false,

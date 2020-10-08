@@ -24,10 +24,6 @@ const schema = new mongoose.Schema(
             type: String,
         },
 
-        contactOwner:{
-            type: String,
-        },
-
         email: {
             type: String,
             required: true,
@@ -39,10 +35,11 @@ const schema = new mongoose.Schema(
             }
         },
 
+        contactOwner:{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+
         emailLogs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Email' }],
 
-        company:
-            {type: String, ref: 'Company'},
+        company:{type: String, ref: 'Company'},
 
         // contactOwner:
         //     {type:String,ref:'User'},

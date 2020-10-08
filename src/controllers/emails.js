@@ -54,9 +54,7 @@ async function addContacts(contactId,emailId) {
         return res.status(404).json('contacts not exist');
     }
     contact.emailLogs.addToSet(emailId);
-    await contact.save().then((id)=>(
-         console.log(contactId)
-    ));
+    await contact.save();
 };
 
 async function updateContacts(req,res) {
