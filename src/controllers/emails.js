@@ -30,7 +30,7 @@ async function getAllEmailLogs(req, res) {
 
 async function getEmailsByContactId(req, res) {
     const { id } = req.params;
-    const emails = await Contact.findById(id).populate('emailLogs').exec();
+    const emails = await Email.find({contacts:id}).populate('contacts','firstName lastName email').exec();
     return res.status(200).json(emails);
 }
 
@@ -54,9 +54,7 @@ async function addContacts(contactId,emailId) {
         return res.status(404).json('contacts not exist');
     }
     contact.emailLogs.addToSet(emailId);
-    await contact.save().then((id)=>(
-         console.log(contactId)
-    ));
+    await contact.save();
 };
 
 async function updateContacts(req,res) {

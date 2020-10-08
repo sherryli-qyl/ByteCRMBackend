@@ -47,12 +47,10 @@ const schema = new mongoose.Schema({
         required: true
     },
     
-    contacts: 
-    //{type: 
-    [{ type: mongoose.Schema.Types.ObjectId, ref: 'Contact' }],
-        //select: false
-        //default:[]
-    //},   
+    contacts: [{
+         type: mongoose.Schema.Types.ObjectId, ref: 'Contact' 
+        }],
+   
     __v:{
         type: Number,
         select: false
