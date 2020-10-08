@@ -82,9 +82,17 @@ async function removeContacts(req,res) {
     }
     contact.emailLogs.pull(emailId);
     email.contacts.pull(contactId);
-    await contact.save();
-    await email.save();
-    return res.status(200).json(contact);
+    if (email.contacts.length === 0){
+        await Email.findByIdAndDelete(email._id);
+        await contact.save();
+        return res.status(200).json("email has been deleted");
+        
+    }
+    else{
+        await email.save();
+        await contact.save();
+        return res.status(200).json(contact);
+    } 
 }
 
 
