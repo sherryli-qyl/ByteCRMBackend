@@ -3,12 +3,12 @@ const bcrypt = require('bcrypt');
 const Joi = require('joi');
 
 const schema = new mongoose.Schema({
-  firstname: {
+  firstName: {
     type: String,
     required: true,
   },
 
-  lastname: {
+  lastName: {
     type: String,
     required: true,
   },
@@ -60,7 +60,7 @@ const schema = new mongoose.Schema({
 //document.instance
 
 schema.virtual('fullName').get(function () {
-  const fullName = `${this.firstname} ${this.lastname}`;
+  const fullName = `${this.firstName} ${this.lastName}`;
   return fullName;
 
 });

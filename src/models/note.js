@@ -8,8 +8,8 @@ const schema = new mongoose.Schema(
     },
 
     relatedTo: {
-      //type: mongoose.Schema.Types.ObjectId,
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      // type: String,
       ref: 'Contact',
     },
 
