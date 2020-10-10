@@ -4,7 +4,7 @@ const schema = new mongoose.Schema(
    {
     type: {
       type: String,
-      default: 'note',
+      default: 'Note',
     },
 
     relatedTo: {
@@ -17,28 +17,14 @@ const schema = new mongoose.Schema(
       required: true
     },
 
-    author: {
-      //createdBy - user
-      type: String,
-    },
-
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     },
 
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-
     lastModifiedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
-    },
-
-    lastUpdatedAt: {
-      type: Date,
     },
 
     isDeleted: {
@@ -50,7 +36,6 @@ const schema = new mongoose.Schema(
       createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
       },
 
       content: {
@@ -75,9 +60,31 @@ const schema = new mongoose.Schema(
     }
   },
   {
-    timestamps: true
-  }
+    timestamps: true,
+    toJSON: { 
+      virtuals: true 
+    }
+}
+  
 );
+
+schema.virtual('date').get(function () {
+  const timestamp = this.createdAt;
+  const year = timestamp.getFullYear();
+  const month = timestamp.getMonth() + 1;
+  const date = timestamp.getDate();
+  return (year + '-' + month + '-' + date);
+});
+
+schema.virtual('time').get(function () {
+  const timestamp = this.createdAt;
+  const hours = timestamp.getHours();
+  const minutes = timestamp.getMinutes() < 10 ? "0" + timestamp.getMinutes() : timestamp.getMinutes();
+  
+  return (hours + ':' + minutes);
+});
+
+//Aug 28, 2020 at 12:07 AM GMT+10
 
 const Model = mongoose.model('Note', schema);
 
