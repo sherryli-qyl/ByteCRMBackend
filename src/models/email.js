@@ -30,11 +30,7 @@ const emailSchema = new mongoose.Schema(
     contacts: [{type: mongoose.Schema.Types.ObjectId, ref: 'Contact' }],
        
 
-    user:{
-        type: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-        select: false
-    },
-
+    user:{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
    
     __v: {
       type: Number,

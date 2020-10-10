@@ -4,14 +4,15 @@ const Email = require('../models/email');
 
 
 async function logEmail(req, res) {
-    const { contacts,date,time,description,type,user } = req.body;
+    const { contacts,date,time,description,type,userId} = req.body;
+    const user = await User.findById(userId).exec();
     const email = new Email({
         description,
         date,
         time,
         type,
-        user,
     });
+    email.user = user;
     for (let i in contacts){
         addContacts(contacts[i],email._id);
         email.contacts.addToSet(contacts[i]);
@@ -30,7 +31,10 @@ async function getAllEmailLogs(req, res) {
 
 async function getEmailsByContactId(req, res) {
     const { id } = req.params;
-    const emails = await Email.find({contacts:id}).populate('contacts','firstName lastName email').exec();
+    const emails = await Email.find({contacts:id})
+    .populate('contacts','firstName lastName email')
+    .populate('user', 'firstName lastName fullName')
+    .exec();
     return res.status(200).json(emails);
 }
 

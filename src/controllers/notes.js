@@ -28,14 +28,16 @@ async function getNote(req, res) {
 async function getNoteByRelatedToId(req, res) { 
   const { id } = req.params;
   console.log("your contact id is " + id);
-  const notes = await Note.find({relatedTo:{$eq: id}})
+
+  const notes = await Note.find({relatedTo: id})
     .populate({ path:'createdBy', model: 'User', select: 'firstname' })
     //.populate({ path: 'relatedTo', model: 'Contact' })
     .exec();
   if (!notes) {
-    return res.status(404).json('notes not found');
+    return res.status(404).json(id);
   }
   return res.status(200).json(notes);
+
 }
 
 

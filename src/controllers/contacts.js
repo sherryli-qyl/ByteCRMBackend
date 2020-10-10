@@ -42,7 +42,7 @@ async function serachContactByUserId(req,res){
         return res.status(200).json(findContacts);
     }
     else{
-        return res.status(409).json("no user found");
+        return res.status(404).json("no user found");
     }
    
 }
