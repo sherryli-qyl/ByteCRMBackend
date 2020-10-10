@@ -78,7 +78,7 @@ schema.virtual('date').get(function () {
 
 schema.virtual('time').get(function () {
   const timestamp = this.createdAt;
-  const hours = timestamp.getHours();
+  const hours = timestamp.getHours() < 10 ? "0" + timestamp.getHours() : timestamp.getHours();;
   const minutes = timestamp.getMinutes() < 10 ? "0" + timestamp.getMinutes() : timestamp.getMinutes();
   
   return (hours + ':' + minutes);
