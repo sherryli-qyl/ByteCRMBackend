@@ -1,4 +1,5 @@
 const Note = require('../models/note');
+const User = require('../models/user');
 
 async function addNote(req, res) { 
   const { relatedTo, content, createdBy, comments, type, isDeleted } = req.body;
@@ -27,12 +28,11 @@ async function getNote(req, res) {
 
 async function getNoteByRelatedToId(req, res) { 
   const { id } = req.params;
-  console.log("your contact id is " + id);
-
   const notes = await Note.find({relatedTo: id})
-    .populate({ path:'createdBy', model: 'User', select: 'firstname' })
-    //.populate({ path: 'relatedTo', model: 'Contact' })
+    .populate('createdBy', 'firstName lastName fullName')
+    .populate('relatedTo','firstName lastName email')
     .exec();
+  
   if (!notes) {
     return res.status(404).json(id);
   }
