@@ -51,6 +51,26 @@ async function updateEmail(req, res) {
     return res.status(202).json(newEmail);
 }
 
+async function deleteEmail(req, res) {
+    const {id} = req.params;
+    const email = await Email.findByIdAndDelete(id).exec();
+  
+    if (!email) {
+      return res.status(404).json('email not found');
+    }
+  
+    await Contact.updateMany(
+      { emailLogs: email._id },
+      {
+        $pull: {
+            emailLogs: email._id 
+        }
+      }
+    ).exec();
+  
+    return res.sendStatus(204);
+  }
+
 
 async function addContacts(contactId,emailId) {
     const contact = await Contact.findById(contactId).exec();
@@ -106,6 +126,7 @@ module.exports = {
     logEmail,
     getAllEmailLogs,
     updateEmail,
+    deleteEmail,
     updateContacts,
     removeContacts,
     getEmailsByContactId,
