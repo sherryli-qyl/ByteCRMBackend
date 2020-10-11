@@ -1,26 +1,20 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema(
- 	{
-		type: {
+   {
+    type: {
       type: String,
-      default: 'note',
+      default: 'Note',
     },
 
     relatedTo: {
-      //type: mongoose.Schema.Types.ObjectId,
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Contact',
     },
 
-		content: {
-			type: String,
-			required: true
-		},
-
-		author: {
-			//createdBy - user
-			type: String,
+    content: {
+      type: String,
+      required: true
     },
 
     createdBy: {
@@ -28,18 +22,9 @@ const schema = new mongoose.Schema(
       ref: 'User'
     },
 
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-
     lastModifiedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
-    },
-
-    lastUpdatedAt: {
-      type: Date,
     },
 
     isDeleted: {
@@ -48,52 +33,58 @@ const schema = new mongoose.Schema(
     },
 
     comments: [{
-			author: String, //createdBy: ref user
-			content: String,
-			//timestamps
+      createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+
+      content: {
+        type: String,
+        required: true,
+      },
+
+      isDeleted: {
+        type: Boolean,
+        default: false,
+      },
+      
+      required: false,
+    },
+    {
+      timestamps: true
     }],
 
-    // comments: [{
-    //   // commentId:
-    //   // createdAt:
-    //   // updatedAt:
-    //   createdBy: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'User'
-    //   },
-
-    //   createdAt: {  
-    //     type: Date,
-    //   },
-
-    //   lastModifiedAt: {
-    //     type: Date,
-    //   },
-
-    //   lastModifiedBy: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'User'
-    //   },
-
-    //   content: {
-    //     type: String,
-    //   },
-
-    //   isDeleted: {
-    //     type: Boolean,
-    //     default: false,
-    //   }
-		// }],
-
-		__v: {
-			type: Number,
-			select: false
-		}
-	},
-	{
-		timestamps: true
-	}
+    __v: {
+      type: Number,
+      select: false
+    }
+  },
+  {
+    timestamps: true,
+    toJSON: { 
+      virtuals: true 
+    }
+}
+  
 );
+
+schema.virtual('date').get(function () {
+  const timestamp = this.createdAt;
+  const year = timestamp.getFullYear();
+  const month = timestamp.getMonth() + 1;
+  const date = timestamp.getDate();
+  return (year + '-' + month + '-' + date);
+});
+
+schema.virtual('time').get(function () {
+  const timestamp = this.createdAt;
+  const hours = timestamp.getHours() < 10 ? "0" + timestamp.getHours() : timestamp.getHours();;
+  const minutes = timestamp.getMinutes() < 10 ? "0" + timestamp.getMinutes() : timestamp.getMinutes();
+  
+  return (hours + ':' + minutes);
+});
+
+//Aug 28, 2020 at 12:07 AM GMT+10
 
 const Model = mongoose.model('Note', schema);
 
