@@ -1,13 +1,15 @@
 const Meeting = require('../models/meeting');
 
 async function addMeeting(req, res) { 
-	const { title, organizer,attendees,date,time} = req.body;
+	const { description,type,title, organizer,attendees,date,time} = req.body;
 	const meeting = new Meeting({
 		title,
 		organizer,
 		attendees,
 		date,
 		time,
+		description,
+		type,
 		
 	});
 	await meeting.save();
@@ -22,15 +24,19 @@ async function getAllMeetings(req, res) {
 async function getMeetings(req, res) { 
 	const id =req.params.id;
 	const meetings = await Meeting.find().exec();
-	let matchedmeetings = [];
+	//let matchedmeetings = [];
+	const matchedmeetings = [];
 	
  	for(let i in meetings){
-		  if(meetings[i].attendees.includes(id))
+		 if(meetings[i].attendees.includes(id))
 		  {
 			matchedmeetings.push(meetings[i]);
 			}
 	 }
-	 return res.json(matchedmeetings);
+
+
+	 
+	 return res.status(200).json(matchedmeetings);
 	
 }
 
