@@ -4,14 +4,15 @@ const Email = require('../models/email');
 
 
 async function logEmail(req, res) {
-    const { contacts,date,time,description,type,user } = req.body;
+    const { contacts,date,time,description,type,userId} = req.body;
+    const user = await User.findById(userId).exec();
     const email = new Email({
         description,
         date,
         time,
         type,
-        user,
     });
+    email.user = user;
     for (let i in contacts){
         addContacts(contacts[i],email._id);
         email.contacts.addToSet(contacts[i]);
@@ -30,7 +31,10 @@ async function getAllEmailLogs(req, res) {
 
 async function getEmailsByContactId(req, res) {
     const { id } = req.params;
-    const emails = await Contact.findById(id).populate('emailLogs').exec();
+    const emails = await Email.find({contacts:id})
+    .populate('contacts','firstName lastName email')
+    .populate('user', 'firstName lastName fullName')
+    .exec();
     return res.status(200).json(emails);
 }
 
@@ -54,9 +58,7 @@ async function addContacts(contactId,emailId) {
         return res.status(404).json('contacts not exist');
     }
     contact.emailLogs.addToSet(emailId);
-    await contact.save().then((id)=>(
-         console.log(contactId)
-    ));
+    await contact.save();
 };
 
 async function updateContacts(req,res) {
@@ -84,9 +86,17 @@ async function removeContacts(req,res) {
     }
     contact.emailLogs.pull(emailId);
     email.contacts.pull(contactId);
-    await contact.save();
-    await email.save();
-    return res.status(200).json(contact);
+    if (email.contacts.length === 0){
+        await Email.findByIdAndDelete(email._id);
+        await contact.save();
+        return res.status(200).json("email has been deleted");
+        
+    }
+    else{
+        await email.save();
+        await contact.save();
+        return res.status(200).json(contact);
+    } 
 }
 
 

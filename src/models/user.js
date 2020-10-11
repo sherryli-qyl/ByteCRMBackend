@@ -3,12 +3,12 @@ const bcrypt = require('bcrypt');
 const Joi = require('joi');
 
 const schema = new mongoose.Schema({
-  firstname: {
+  firstName: {
     type: String,
     required: true,
   },
 
-  lastname: {
+  lastName: {
     type: String,
     required: true,
   },
@@ -38,6 +38,11 @@ const schema = new mongoose.Schema({
       msg: 'Invalid password',
     },
   },
+
+  contacts: [
+    {
+    type: mongoose.Schema.Types.ObjectId, ref: 'Contact'}
+  ],
 
   __v: {
     type: Number,
