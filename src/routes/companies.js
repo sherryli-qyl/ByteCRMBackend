@@ -3,7 +3,7 @@ const express = require('express');
 
 const {
        addCompany, 
-       getCompany, 
+       getCompanyByCode, 
        getAllCompanies, 
        updateCompany, 
        deleteCompany,
@@ -14,7 +14,7 @@ const {
 const router = express.Router();
 
 router.get('/', getAllCompanies);
-router.get('/:code', getCompany);
+router.get('/:code', getCompanyByCode);
 router.post('/', addCompany);
 router.put('/:code',updateCompany);
 router.delete('/:code', deleteCompany); 
