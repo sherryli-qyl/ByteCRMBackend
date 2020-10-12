@@ -21,7 +21,7 @@ async function getContact(req, res) {
     const { id } = req.params;
     const contact = await Contact.findById(id).
     populate('company','name').
-    populate('contactOwner','firstname lastname email').exec();
+    populate('contactOwner','firstName lastName email').exec();
     if (!contact) {
         return res.status(404).json('contact not found');
     }
