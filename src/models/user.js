@@ -44,6 +44,11 @@ const schema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, ref: 'Contact'}
   ],
 
+  companies:[
+    {
+    type: String, ref: 'Company'}
+  ],
+
   __v: {
     type: Number,
     select: false,

@@ -12,40 +12,35 @@ const schema = new mongoose.Schema({
         required: true
     },
 
-    company_owner:{
-        type: String,
-        required: true
-    },
-    
-    creat_date:{
-        type: String,
+    companyDomainName:{
+        type:String,
         required: true
     },
 
-    lastactivity_date:{
-        type: String,
-        required: true
-    },
-
-    phone_number:{
-        type: String,
-        required: true
+    phoneNumber:{
+        type: String
     }, 
+
+    type:{
+        type:String
+    },
     
     city:{
-        type: String,
-        required: true
+        type: String
+    },
+
+    state_region:{
+        type:String
     },
 
     country:{
-        type: String,
-        required: true
+        type: String
     },
 
     industry:{
         type: String,
-        required: true
     },
+    companyOwner:{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     
     contacts: [{
          type: mongoose.Schema.Types.ObjectId, ref: 'Contact' 
