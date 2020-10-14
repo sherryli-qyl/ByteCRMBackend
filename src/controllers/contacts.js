@@ -66,18 +66,24 @@ async function searchContactByUserId(req, res) {
   }
 }
 
-// api/Contacts?fields=courses;
 async function getAllContacts(req, res) {
-  if (req.query.getAll) {
-    const contacts = await Contact.find().exec();
-    return res.status(200).json(contacts);
-  }
-  const { page = 1, pageSize = 10, q = "", fields } = req.query;
-  const limit = Math.max(pageSize * 1, 10);
-  const skip = (Math.max(page * 1, 1) - 1) * limit;
-  const contacts = await Contact.find().limit(limit).skip(skip).exec();
-
+  let contacts = await Contact.find()
+    .populate({
+      path: "company",
+      select: "name",
+    })
+    .populate({
+      path: "contactOwner",
+      select: "firstName lastName",
+    })
+    .exec();
   return res.status(200).json(contacts);
+  // // fields来自query params
+  // const { page = 1, pageSize = 10, q = "", fields } = req.query;
+  // const limit = Math.max(pageSize * 1, 10);
+  // const skip = (Math.max(page * 1, 1) - 1) * limit;
+  // const contacts = await Contact.find().limit(limit).skip(skip).exec();
+  // return res.status(200).json(contacts);
 }
 
 async function updateContact(req, res) {
