@@ -3,6 +3,7 @@ const User = require('../models/user');
 
 async function addNote(req, res) { 
   const { relatedTo, content, createdBy, comments, type, isDeleted } = req.body;
+  const user = await User.findById(createdBy).exec();
   const note = new Note({
     relatedTo,
     content,
@@ -11,8 +12,13 @@ async function addNote(req, res) {
     type,
     isDeleted,
   });
+  note.user = user;
+  
   await note.save();
-  return res.json(note);
+  const resNote = await Note.findOne({_id: note._id})
+    .populate('createdBy', 'firstName lastName fullName')
+    .exec();
+  return res.json(resNote);
 }
 
 
@@ -49,10 +55,10 @@ async function getAllNotes(req, res) {
 
 async function updateNote(req, res) { 
   const { id } = req.params;
-  const { content, author, comments } = req.body;
+  const { content, createdBy, comments } = req.body;
   const newNote = await Note.findByIdAndUpdate(
     id,
-    { content, author, comments },
+    { content, createdBy, comments },
     {
       new: true 
     }
@@ -66,8 +72,8 @@ async function updateNote(req, res) {
 
 async function deleteNote(req, res) { 
   const { id } = req.params;
-  //const note = await (await Note.findByIdAndDelete(id)).exec();
-  const note = await Note.findByIdAndDelete(id);
+  const note = await Note.findByIdAndDelete(id).exec();
+  
   if (!note){
     return res.status(404).json('note not found');
   }
