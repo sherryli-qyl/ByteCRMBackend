@@ -49,6 +49,8 @@ const schema = new mongoose.Schema({
     type: String, ref: 'Company'}
   ],
 
+  createTasks: [{type: mongoose.Schema.Types.ObjectId, ref: 'Task'}],
+
   __v: {
     type: Number,
     select: false,

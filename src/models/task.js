@@ -2,17 +2,46 @@ const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema(
  	{
-	  	content: {
-			type: String,
-			required: true
+		type: {
+      type: String,
+			required: true,
     },
-    
-    author: {
-			//createdBy - user
+
+    value:{
 			type: String,
-			required: true
+			required:false,
+		},
+		
+		description:{
+			type: String,
+			required:true,
+		},
+		
+		time: {
+			type: String,
+			required: true,
 		},
 
+		date: {
+			type: String,
+			required: true,
+		},
+
+		typeTask: {
+      type: String,
+			required: true,
+    },
+
+		priority: {
+			type: String,
+			required:true,
+		},
+
+		assignedToUser: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+     
+    user:{type:  mongoose.Schema.Types.ObjectId, ref: 'User'},
+        
+    
 
 		__v: {
 			type: Number,
