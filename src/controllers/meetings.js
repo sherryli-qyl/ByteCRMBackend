@@ -1,7 +1,7 @@
 const Meeting = require('../models/meeting');
 
 async function addMeeting(req, res) { 
-	const { description,type,title, organizer,attendees,date,time} = req.body;
+	const { description,type,title, organizer,attendees,date,time,duration} = req.body;
 	const meeting = new Meeting({
 		title,
 		organizer,
@@ -10,6 +10,7 @@ async function addMeeting(req, res) {
 		time,
 		description,
 		type,
+		duration,
 		
 	});
 	await meeting.save();
@@ -40,8 +41,22 @@ async function getMeetings(req, res) {
 	
 }
 
+async function updateMeeting(req, res) {
+    const { id } = req.params;
+    const {date,time,duration,description} = req.body;
+    const newMeeting = await Meeting.findByIdAndUpdate(
+        id,
+        {date,time,duration,description},{new: true}
+    ).exec();
+    if (!newMeeting) {
+        return res.status(404).json('meeting not found');
+    }
+    return res.json(newMeeting);
+}
+
 module.exports = {
 	addMeeting,
 	getAllMeetings,
-	getMeetings
+	getMeetings,
+	updateMeeting
 }
