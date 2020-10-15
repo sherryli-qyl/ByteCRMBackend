@@ -1,43 +1,56 @@
 const Company = require ('../models/company');
 const Contact = require ('../models/contact');
+const User = require ('../models/user');
 
 async function addCompany(req, res) {
     const { 
       name,
       code,
-      company_owner,
-      creat_date,
-      lastactivity_date,
-      phone_number,
+      companyOwner,
+      createDate,
+      lastActivityDate,
+      phoneNumber,
       city,
       country,
-      industry    
+      industry,    
     } = req.body;
+
     const existingCompany = await Company.findById(code).exec();
     if (existingCompany) {
       return res.status(409).json ('Duplicate course code');
     }
 
+    const user = await User.findById(companyOwner).exec();
+    if (!user) {
+      return res.status(404).json ('User not Found');
+    }
+    
+    user.companies.addToSet(code);
+
     const company = new Company(
     {
       name,
       code,
-      company_owner,
-      creat_date,
-      lastactivity_date,
-      phone_number,
+      companyOwner,
+      createDate,
+      lastActivityDate,
+      phoneNumber,
       city,
       country,
-      industry
+      industry,  
     });
+
     await company.save();
+    await user.save();
+
     return res.status(201).json(company);
   }
 
-async function getCompany(req, res){
+async function getCompanyByCode(req, res){
     const {code} = req.params;
     const company = await Company.findById(code)
-    .populate('contacts')
+    .populate('contacts','name ')
+    .populate('companyOwner','name')
     .exec();
     if (!company){
         return res.status(404).json('company not found');
@@ -54,10 +67,10 @@ async function updateCompany(req, res) {
     const { code } = req.params;
     const { 
       name,
-      company_owner,
-      creat_date,
-      lastactivity_date,
-      phone_number,
+      companyOwner,
+      createDate,
+      lastActivityDate,
+      phoneNumber,
       city,
       country,
       industry
@@ -66,10 +79,10 @@ async function updateCompany(req, res) {
       code,
       { 
         name,
-        company_owner,
-        creat_date,
-        lastactivity_date,
-        phone_number,
+        companyOwner,
+        createDate,
+        lastActivityDate,
+        phoneNumber,
         city,
         country,
         industry
@@ -141,7 +154,7 @@ async function removeContact (req, res){
 
 module.exports = {
     addCompany,
-    getCompany,
+    getCompanyByCode,
     getAllCompanies,
     updateCompany,
     deleteCompany,

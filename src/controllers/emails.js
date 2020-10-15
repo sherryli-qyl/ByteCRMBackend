@@ -18,7 +18,12 @@ async function logEmail(req, res) {
         email.contacts.addToSet(contacts[i]);
     }
     await email.save();
-    return res.json(email);
+    const resEmail = await Email.findOne({_id:email._id})
+    .populate('contacts','firstName lastName email')
+    .populate('user', 'firstName lastName fullName')
+    .exec();
+
+    return res.json(resEmail);
 }
 
 async function getAllEmailLogs(req, res) {
@@ -50,6 +55,23 @@ async function updateEmail(req, res) {
     }
     return res.status(202).json(newEmail);
 }
+
+async function deleteEmail(req, res) {
+    const {id} = req.params;
+    const email = await Email.findByIdAndDelete(id).exec();
+    if (!email) {
+      return res.status(404).json('email not found');
+    }
+    await Contact.updateMany(
+      { emailLogs: email._id },
+      {
+        $pull: {
+            emailLogs: email._id 
+        }
+      }
+    ).exec();
+    return res.sendStatus(204);
+  }
 
 
 async function addContacts(contactId,emailId) {
@@ -106,6 +128,7 @@ module.exports = {
     logEmail,
     getAllEmailLogs,
     updateEmail,
+    deleteEmail,
     updateContacts,
     removeContacts,
     getEmailsByContactId,
