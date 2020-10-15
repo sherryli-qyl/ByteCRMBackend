@@ -5,7 +5,7 @@ const { JWT_KEY } = process.env;
 //access token
 //refresh token -> oauth, sso
 function generateToken(id) {
-  const token = jwt.sign({id}, JWT_KEY, {expiresIn: '10d'});
+  const token = jwt.sign({ id }, JWT_KEY, { expiresIn: '60d' });
   return token;
 }
 
