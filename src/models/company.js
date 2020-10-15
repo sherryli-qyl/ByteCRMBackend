@@ -12,25 +12,12 @@ const schema = new mongoose.Schema({
         required: true
     },
 
-    companyDomainName:{
-        type:String,
-        required: true
-    },
-
     phoneNumber:{
         type: String
     }, 
-
-    type:{
-        type:String
-    },
     
     city:{
         type: String
-    },
-
-    state_region:{
-        type:String
     },
 
     country:{
@@ -40,7 +27,26 @@ const schema = new mongoose.Schema({
     industry:{
         type: String,
     },
-    companyOwner:{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    lastActivityDate: {
+        type: String,
+        validate: {
+          validator: (date) => {
+            return testDate(date);
+          },
+          msg: "Invalid date format",
+        },
+      },
+  
+      createDate: {
+        type: String,
+        validate: {
+          validator: (date) => {
+            return testDate(date);
+          },
+          msg: "Invalid date format",
+        },
+      },
+      companyOwner:{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     
     contacts: [{
          type: mongoose.Schema.Types.ObjectId, ref: 'Contact' 
