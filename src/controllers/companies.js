@@ -6,12 +6,11 @@ async function addCompany(req, res) {
     const { 
       name,
       code,
-      companyDomainName,
       companyOwner,
+      createDate,
+      lastActivityDate,
       phoneNumber,
       city,
-      type,
-      state_region,
       country,
       industry,    
     } = req.body;
@@ -32,12 +31,11 @@ async function addCompany(req, res) {
     {
       name,
       code,
-      companyDomainName,
       companyOwner,
+      createDate,
+      lastActivityDate,
       phoneNumber,
-      type,
       city,
-      state_region,
       country,
       industry,  
     });
@@ -51,8 +49,8 @@ async function addCompany(req, res) {
 async function getCompanyByCode(req, res){
     const {code} = req.params;
     const company = await Company.findById(code)
-    .populate('contacts','firstName lastName email')
-    .populate('companyOwner','firstName lastName fullName')
+    .populate('contacts','name ')
+    .populate('companyOwner','name')
     .exec();
     if (!company){
         return res.status(404).json('company not found');
@@ -69,10 +67,10 @@ async function updateCompany(req, res) {
     const { code } = req.params;
     const { 
       name,
-      company_owner,
-      creat_date,
-      lastactivity_date,
-      phone_number,
+      companyOwner,
+      createDate,
+      lastActivityDate,
+      phoneNumber,
       city,
       country,
       industry
@@ -81,10 +79,10 @@ async function updateCompany(req, res) {
       code,
       { 
         name,
-        company_owner,
-        creat_date,
-        lastactivity_date,
-        phone_number,
+        companyOwner,
+        createDate,
+        lastActivityDate,
+        phoneNumber,
         city,
         country,
         industry

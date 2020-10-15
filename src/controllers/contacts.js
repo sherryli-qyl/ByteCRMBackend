@@ -34,7 +34,7 @@ async function addContact(req, res) {
 async function getContact(req, res) {
   const { id } = req.params;
   const contact = await Contact.findById(id)
-    .populate("company", "name companyDomainName phoneNumber")
+    .populate("company", "name")
     .populate("contactOwner", "firstName lastName email")
     .exec();
   if (!contact) {
