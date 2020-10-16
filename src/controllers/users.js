@@ -21,8 +21,13 @@ async function addUser(req, res) {
   return res.json({ firstName, lastName, email, token});
 }
 
+async function getAllUsers(req, res) {
+  const users = await User.find().exec();
+  return res.json(users);
+
 module.exports = { 
-  addUser 
+  addUser,
+  getAllUsers,
 };
 
 // POST /api/users/login
