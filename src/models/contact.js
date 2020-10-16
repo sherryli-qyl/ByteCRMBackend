@@ -19,7 +19,7 @@ const schema = new mongoose.Schema(
     },
 
     phoneNo: {
-      type: Number,
+      type: String,
       validate: {
         validator: (number) => {
           return testPhoneNum(number);
@@ -41,6 +41,10 @@ const schema = new mongoose.Schema(
         },
         msg: "Invalid email format",
       },
+    },
+
+    leadStatus: {
+      type: String,
     },
 
     lastActivityDate: {
@@ -68,14 +72,6 @@ const schema = new mongoose.Schema(
     emailLogs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Email" }],
 
     company: { type: String, ref: "Company" },
-
-    // contactOwner:
-    //     {type:String,ref:'User'},
-
-    // __v: {
-    //     type: Number,
-    //     select: false
-    // }
   },
   {
     toJSON: {
