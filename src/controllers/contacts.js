@@ -3,29 +3,34 @@ const Company = require("../models/company");
 const User = require("../models/user");
 
 async function addContact(req, res) {
-  const {
-    firstName,
-    lastName,
-    email,
-    jobTitle,
-    phoneNo,
-    lifeCycle,
-    company,
-    lastActivityDate,
-    leadStatus,
-    createDate,
-  } = req.body;
+  const company = await Company.findOne({ name: req.body.companyName }).populate({
+    path: "company",
+    select: "name"
+  }).exec();
+  let contactOwner;
+  if (req.body.contactOwnerLastName && req.body.contactOwnerFirstName !== "Unassigned") {
+    contactOwner = await User.findOne({
+      firstName: req.body.contactOwnerFirstName,
+      lastName: req.body.contactOwnerLastName,
+    }).populate({
+      path: "user",
+      select: "fullNames"
+    }).exec();
+  } else {
+    contactOwner = undefined;
+  }
   const contact = new Contact({
-    firstName,
-    lastName,
-    email,
-    jobTitle,
-    phoneNo,
-    lifeCycle,
-    company,
-    lastActivityDate,
-    leadStatus,
-    createDate,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    email: req.body.email,
+    jobTitle: req.body.jobTitle,
+    phoneNo: req.body.phoneNo,
+    contactOwner: contactOwner ? contactOwner._id : undefined,
+    lifeCycle: req.body.lifeCycle,
+    company: company ? company.code : undefined,
+    lastActivityDate: req.body.lastActivityDate,
+    leadStatus: req.body.leadStatus,
+    createDate: req.body.createDate,
   });
   await contact.save();
   return res.json(contact);
@@ -41,29 +46,6 @@ async function getContact(req, res) {
     return res.status(404).json("contact not found");
   }
   return res.status(200).json(contact);
-}
-
-async function searchContactByUserId(req, res) {
-  const { userId, keywords } = req.params;
-  const UpperCaseKeywords = keywords.toUpperCase();
-  const contact = await Contact.find(
-    { contactOwner: userId },
-    "firstName lastName fullName email"
-  );
-  let findContacts = [];
-  for (let i in contact) {
-    if (
-      contact[i].fullName.toUpperCase().includes(UpperCaseKeywords) ||
-      contact[i].email.toUpperCase().includes(UpperCaseKeywords)
-    ) {
-      findContacts.push(contact[i]);
-    }
-  }
-  if (findContacts.length >= 1) {
-    return res.status(200).json(findContacts);
-  } else {
-    return res.status(404).json("no user found");
-  }
 }
 
 async function getAllContacts(req, res) {
@@ -88,22 +70,8 @@ async function getAllContacts(req, res) {
 
 async function updateContact(req, res) {
   const { id } = req.params;
-  const {
-    firstName,
-    lastName,
-    phoneNo,
-    lifeCycle,
-    jobTitle,
-    contactOwner,
-  } = req.body;
-  const newContact = await Contact.findByIdAndUpdate(id, {
-    firstName,
-    lastName,
-    phoneNo,
-    lifeCycle,
-    jobTitle,
-    contactOwner,
-  }).exec();
+  console.log(req.body);
+  const newContact = await Contact.findByIdAndUpdate(id, req.body, {new: true}).exec();
   if (!newContact) {
     return res.status(404).json("contact not found");
   }
@@ -125,6 +93,29 @@ async function deleteContact(req, res) {
   }
   const deleteContact = await Contact.findByIdAndDelete(id).exec();
   return res.status(200).json(deleteContact);
+}
+
+async function searchContactByUserId(req, res) {
+  const { userId, keywords } = req.params;
+  const UpperCaseKeywords = keywords.toUpperCase();
+  const contact = await Contact.find(
+    { contactOwner: userId },
+    "firstName lastName fullName email"
+  );
+  let findContacts = [];
+  for (let i in contact) {
+    if (
+      contact[i].fullName.toUpperCase().includes(UpperCaseKeywords) ||
+      contact[i].email.toUpperCase().includes(UpperCaseKeywords)
+    ) {
+      findContacts.push(contact[i]);
+    }
+  }
+  if (findContacts.length >= 1) {
+    return res.status(200).json(findContacts);
+  } else {
+    return res.status(404).json("no user found");
+  }
 }
 
 async function updateUser(req, res) {
