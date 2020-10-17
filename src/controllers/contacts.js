@@ -3,37 +3,37 @@ const Company = require("../models/company");
 const User = require("../models/user");
 
 async function addContact(req, res) {
-  const company = await Company.findOne({ name: req.body.companyName }).populate({
-    path: "company",
-    select: "name"
-  }).exec();
-  let contactOwner;
-  if (req.body.contactOwnerLastName && req.body.contactOwnerFirstName !== "Unassigned") {
-    contactOwner = await User.findOne({
-      firstName: req.body.contactOwnerFirstName,
-      lastName: req.body.contactOwnerLastName,
-    }).populate({
-      path: "user",
-      select: "fullNames"
-    }).exec();
-  } else {
-    contactOwner = undefined;
-  }
+  // const company = await Company.findOne({ name: req.body.companyName }).populate({
+  //   path: "company",
+  //   select: "name"
+  // }).exec();
+  // let contactOwner;
+  // if (req.body.contactOwnerLastName && req.body.contactOwnerFirstName !== "Unassigned") {
+  //   contactOwner = await User.findOne({
+  //     firstName: req.body.contactOwnerFirstName,
+  //     lastName: req.body.contactOwnerLastName,
+  //   }).populate({
+  //     path: "user",
+  //     select: "fullNames"
+  //   }).exec();
+  // } else {
+  //   contactOwner = undefined;
+  // }
   const contact = new Contact({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
     jobTitle: req.body.jobTitle,
     phoneNo: req.body.phoneNo,
-    contactOwner: contactOwner ? contactOwner._id : undefined,
+    // contactOwner: contactOwner ? contactOwner._id : undefined,
     lifeCycle: req.body.lifeCycle,
-    company: company ? company.code : undefined,
+    // company: company ? company.code : undefined,
     lastActivityDate: req.body.lastActivityDate,
     leadStatus: req.body.leadStatus,
     createDate: req.body.createDate,
   });
   await contact.save();
-  return res.json(contact);
+  return res.status(201).json(contact);
 }
 
 async function getContact(req, res) {
@@ -59,7 +59,9 @@ async function getAllContacts(req, res) {
       select: "firstName lastName",
     })
     .exec();
-  return res.status(200).json(contacts);
+  return contacts
+    ? res.status(200).json(contacts)
+    : res.status(404).json("No contacts");
   // // fields来自query params
   // const { page = 1, pageSize = 10, q = "", fields } = req.query;
   // const limit = Math.max(pageSize * 1, 10);
@@ -70,8 +72,9 @@ async function getAllContacts(req, res) {
 
 async function updateContact(req, res) {
   const { id } = req.params;
-  console.log(req.body);
-  const newContact = await Contact.findByIdAndUpdate(id, req.body, {new: true}).exec();
+  const newContact = await Contact.findByIdAndUpdate(id, req.body, {
+    new: true,
+  }).exec();
   if (!newContact) {
     return res.status(404).json("contact not found");
   }
@@ -92,7 +95,7 @@ async function deleteContact(req, res) {
     await user.save();
   }
   const deleteContact = await Contact.findByIdAndDelete(id).exec();
-  return res.status(200).json(deleteContact);
+  return res.status(204).json(deleteContact);
 }
 
 async function searchContactByUserId(req, res) {

@@ -72,6 +72,11 @@ const schema = new mongoose.Schema(
     emailLogs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Email" }],
 
     company: { type: String, ref: "Company" },
+
+    __v: {
+      type: Number,
+      select: false,
+    },
   },
   {
     toJSON: {

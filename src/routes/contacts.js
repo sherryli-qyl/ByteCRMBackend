@@ -16,10 +16,9 @@ const router = express.Router();
 
 router.get('/', getAllContacts);
 router.get('/:id', getContact);
-router.get('/search/:userId/:keywords',searchContactByUserId);
+router.get('/search/:userId/:keywords', searchContactByUserId);
 router.post('/', addContact);
 router.put('/:id', updateContact);
-router.post('/', addContact);
 router.delete('/:id', deleteContact);
 router.put('/:contactId/users/:userId', updateUser);
 router.post('/:id/companies/:code', addCompany);
