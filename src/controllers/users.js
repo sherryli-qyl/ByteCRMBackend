@@ -24,6 +24,7 @@ async function addUser(req, res) {
 async function getAllUsers(req, res) {
   const users = await User.find().exec();
   return res.json(users);
+}
 
 module.exports = { 
   addUser,
