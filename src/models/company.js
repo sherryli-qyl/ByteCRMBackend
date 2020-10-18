@@ -14,6 +14,10 @@ const schema = new mongoose.Schema(
       required: true,
     },
 
+    companyDomain:{
+        type:String,
+    },
+
     phoneNumber: {
       type: String,
       validate: {

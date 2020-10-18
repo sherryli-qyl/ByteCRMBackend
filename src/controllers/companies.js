@@ -49,6 +49,31 @@ async function getCompanyByCode(req, res) {
   return res.json(company);
 }
 
+async function searchCompanyByUserId(req, res) {
+  const { userId, keywords } = req.params;
+  const UpperCaseKeywords = keywords.toUpperCase();
+  const companies = await Company.find(
+    { companyOwner: userId },
+    "name companyDomain"
+  );
+  
+  let findCompanies = [];
+  for (let i in companies) {
+    console.log( companies[i].companyDomain);
+    if (
+      companies[i].name.toUpperCase().includes(UpperCaseKeywords) ||
+      companies[i].companyDomain && companies[i].companyDomain.toUpperCase().includes(UpperCaseKeywords)
+    ) {
+      findCompanies.push(companies[i]);
+    }
+  }
+  if (findCompanies.length >= 1) {
+    return res.status(200).json(findCompanies);
+  } else {
+    return res.status(404).json("no user found");
+  }
+}
+
 async function getAllCompanies(req, res) {
   const companies = await Company.find()
     .populate({
@@ -161,4 +186,5 @@ module.exports = {
   deleteCompany,
   addContact,
   removeContact,
+  searchCompanyByUserId,
 };
