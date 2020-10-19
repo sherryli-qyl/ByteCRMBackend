@@ -54,7 +54,7 @@ async function searchCompanyByUserId(req, res) {
   const UpperCaseKeywords = keywords.toUpperCase();
   const companies = await Company.find(
     { companyOwner: userId },
-    "name companyDomain"
+    "name companyDomain phoneNumber"
   );
   
   let findCompanies = [];
