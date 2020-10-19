@@ -16,7 +16,9 @@ const morganLog =
 
 app.use(helmet());
 app.use(morganLog);
-app.use(cors());
+app.use(cors({
+  exposedHeaders: 'X-AUTH-TOKEN',
+}));
 app.use (express.json());//get data from req.body needs app.use(express.json())
 
 app.get('/', (req, res) => {
