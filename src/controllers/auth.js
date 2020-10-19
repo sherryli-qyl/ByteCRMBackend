@@ -15,9 +15,8 @@ async function loginUser(req, res) {
   }
 
   const token = generateToken(existingUser._id);
-  console.log(token);
-  // return res.status(204).json({ email, token });
-  return res.set('x-auth-token',token).json({existingUser});
+  const user = existingUser
+  return res.set('x-auth-token',token).json({user});
 }
 
 module.exports = { 
