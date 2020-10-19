@@ -5,33 +5,30 @@ const User = require("../models/user");
 async function addCompany(req, res) {
   const {
     name,
-    // companyOwner,
     lastLoggedCallDate,
-    // associatedContacts,
     phoneNumber,
+    companyDomain,
     city,
+    type,
+    state_region,
     country,
     industry,
   } = req.body;
+
   const existingCompany = await Company.findOne({ name: name }).exec();
   if (existingCompany) {
     return res.status(409).json("Duplicate company name");
   }
-  // const user = await User.findById(companyOwner).exec();
-  // if (!user) {
-  //   return res.status(404).json("User not Found");
-  // }
-  // user.companies.addToSet(code);
-  // await user.save();
   const company = new Company({
-    name: name,
-    // companyOwner,
-    lastLoggedCallDate: lastLoggedCallDate,
-    // associatedContacts,
-    phoneNumber: phoneNumber,
-    city: city,
-    country: country,
-    industry: industry,
+    name,
+    lastLoggedCallDate,
+    companyDomain,
+    phoneNumber,
+    type,
+    state_region,
+    city,
+    country,
+    industry,
   });
   await company.save();
   return res.status(201).json(company);

@@ -26,6 +26,14 @@ const schema = new mongoose.Schema(
       type: String,
     },
 
+    type:{
+        type:String
+    },
+
+    state_region:{
+        type:String
+    },
+
     country: {
       type: String,
     },
