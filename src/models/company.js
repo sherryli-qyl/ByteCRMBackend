@@ -20,16 +20,18 @@ const schema = new mongoose.Schema(
 
     phoneNumber: {
       type: String,
-      validate: {
-        validator: (number) => {
-          return testPhoneNum(number);
-        },
-        msg: "Invalid phone number format",
-      },
     },
 
     city: {
       type: String,
+    },
+
+    type:{
+        type:String
+    },
+
+    state_region:{
+        type:String
     },
 
     country: {
@@ -52,12 +54,9 @@ const schema = new mongoose.Schema(
     
     companyOwner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 
-    associatedContacts: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Contact",
-      },
-    ],
+    associatedContacts: [{
+        type: mongoose.Schema.Types.ObjectId, ref: 'Contact' 
+       }],
 
     __v: {
       type: Number,

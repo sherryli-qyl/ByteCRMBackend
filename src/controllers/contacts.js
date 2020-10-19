@@ -39,7 +39,7 @@ async function addContact(req, res) {
 async function getContact(req, res) {
   const { id } = req.params;
   const contact = await Contact.findById(id)
-    .populate("company", "name")
+    .populate("company", "name companyDomain phoneNumber")
     .populate("contactOwner", "firstName lastName email")
     .exec();
   if (!contact) {
@@ -86,7 +86,7 @@ async function deleteContact(req, res) {
   const contact = await Contact.findById(id).exec();
   if (contact.company) {
     const company = await Company.findById(contact.company).exec();
-    company.contacts.pull(contact._id);
+    company.associatedContacts.pull(contact._id);
     await company.save();
   }
   if (contact.contactOwner) {
@@ -154,7 +154,7 @@ async function addCompany(req, res) {
     return res.status(404).json("contact or company not exist");
   }
   contact.company = company;
-  company.contacts.addToSet(contact._id);
+  company.associatedContacts.addToSet(contact._id);
 
   await contact.save();
   await company.save();
@@ -170,7 +170,7 @@ async function removeCompany(req, res) {
     return res.status(404).json("contact or company not exist");
   }
 
-  company.contacts.pull(id);
+  company.associatedContacts.pull(id);
   contact.company = undefined;
 
   await company.save();
