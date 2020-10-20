@@ -1,6 +1,7 @@
 const Contact = require('../models/contact');
 const User = require('../models/user');
 const Email = require('../models/email');
+const {checkDuplicateItem} = require('../utils/sortArray');
 
 
 async function logEmail(req, res) {
@@ -44,16 +45,18 @@ async function getEmailsByContactId(req, res) {
 }
 
 async function getEmailsByMultiContacts(req, res) {
-    const { contactsId } = req.body
+    const { ids } = req.params;
+    const contactsId = ids.split("&&");
     let allEmails = [];
+    console.log(contactsId);
     for (i in contactsId) {
         const emails = await Email.find({ contacts: contactsId[i] })
             .populate('contacts', 'firstName lastName email')
             .populate('user', 'firstName lastName fullName')
             .exec();
         allEmails = allEmails.concat(emails);
-        console.log("!!!!!!!" +allEmails);
     }
+    allEmails = checkDuplicateItem(allEmails);
     return res.status(200).json(allEmails);
 }
 
