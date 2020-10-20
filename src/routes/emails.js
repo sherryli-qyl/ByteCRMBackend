@@ -4,6 +4,7 @@ const {
     logEmail,
     getAllEmailLogs, 
     getEmailsByContactId,
+    getEmailsByMultiContacts,
     updateContacts,
     updateEmail,
     deleteEmail,
@@ -14,6 +15,7 @@ const router = express.Router();
 
 router.get('/',  getAllEmailLogs);
 router.get('/:id', getEmailsByContactId);
+router.get('/company/contacts',getEmailsByMultiContacts);
 router.post('/', logEmail);
 router.put('/:id',updateEmail);
 router.put('/:emailId/contacts/:contactId', updateContacts);
