@@ -37,7 +37,7 @@ async function addCompany(req, res) {
 async function getCompanyByCode(req, res) {
   const { code } = req.params;
   const company = await Company.findById(code)
-    .populate("associatedContacts", "firstName lastName email jobTitle")
+    .populate("associatedContacts", "firstName lastName email jobTitle phoneNo")
     .populate("companyOwner", "firstName lastName")
     .exec();
   if (!company) {
