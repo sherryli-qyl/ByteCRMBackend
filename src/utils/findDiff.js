@@ -4,6 +4,7 @@ function findRedunDant(oldData, newData) {
     let results = [];
     for (let i in oldData) {
         if (!newData.includes(oldData[i].toString())) {
+          
             results.push(oldData[i]);
         }
     }

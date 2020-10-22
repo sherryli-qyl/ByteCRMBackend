@@ -179,9 +179,9 @@ async function removeContact(req, res) {
 async function multiRefChange(req, res) {
   const { code } = req.params;
   const { contacts } = req.body;
-  const company = await Company.findById(code)
-  .populate("associatedContacts", "firstName lastName email jobTitle phoneNo")
-  .exec();
+  console.log(code);
+  console.log(contacts);
+  const company = await Company.findById(code).exec();
 
   if (!company) {
     return res.status(404).json("company not exist");
@@ -190,9 +190,12 @@ async function multiRefChange(req, res) {
   const existContacts = company.associatedContacts;
 
   const removedContacts = findRedunDant(existContacts, contacts);
+  console.log(2222);
+  console.log(removedContacts);
 
   for (let i in removedContacts) {
     company.associatedContacts.pull(removedContacts[i]);
+    
     const contact = await Contact.findById(removedContacts[i]).exec();
     if (!contact) {
       return res.status(404).json("contact not exist");
@@ -213,7 +216,10 @@ async function multiRefChange(req, res) {
     await contact.save();
   }
   await company.save();
-  return res.status(200).json(company);
+  const result = await Company.findById(code)
+  .populate("associatedContacts", "firstName lastName email jobTitle phoneNo")
+  .exec();
+  return res.status(200).json(result);
 }
 
 
