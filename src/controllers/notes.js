@@ -2,10 +2,11 @@ const Note = require('../models/note');
 const User = require('../models/user');
 
 async function addNote(req, res) { 
-  const { relatedTo, content, createdBy, comments, type, isDeleted } = req.body;
+  const { relatedTo, onModel, content, createdBy, comments, type, isDeleted } = req.body;
   const user = await User.findById(createdBy).exec();
   const note = new Note({
     relatedTo,
+    onModel,
     content,
     createdBy,
     comments,
@@ -36,6 +37,7 @@ async function getNoteByRelatedToId(req, res) {
   const { id } = req.params;
   const notes = await Note.find({relatedTo: id})
     .populate('createdBy', 'firstName lastName fullName')
+    .populate('relatedTo')
     .exec();
   
   if (!notes) {
