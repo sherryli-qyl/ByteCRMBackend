@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema(
-   {
+  {
     type: {
       type: String,
       default: 'Note',
@@ -9,7 +9,12 @@ const schema = new mongoose.Schema(
 
     relatedTo: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Contact',
+      refPath: 'onModel'
+    },
+
+    onModel: {
+      type: String,
+      enum: ['Contact', 'Company']
     },
 
     content: {
@@ -64,8 +69,7 @@ const schema = new mongoose.Schema(
     toJSON: { 
       virtuals: true 
     }
-}
-  
+  }
 );
 
 schema.virtual('date').get(function () {
@@ -83,8 +87,6 @@ schema.virtual('time').get(function () {
   
   return (hours + ':' + minutes);
 });
-
-//Aug 28, 2020 at 12:07 AM GMT+10
 
 const Model = mongoose.model('Note', schema);
 
