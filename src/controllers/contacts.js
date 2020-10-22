@@ -1,33 +1,16 @@
 const Contact = require("../models/contact");
 const Company = require("../models/company");
 const User = require("../models/user");
+const {findRedunDant, findNew} = require('../utils/findDiff');
 
 async function addContact(req, res) {
-  // const company = await Company.findOne({ name: req.body.companyName }).populate({
-  //   path: "company",
-  //   select: "name"
-  // }).exec();
-  // let contactOwner;
-  // if (req.body.contactOwnerLastName && req.body.contactOwnerFirstName !== "Unassigned") {
-  //   contactOwner = await User.findOne({
-  //     firstName: req.body.contactOwnerFirstName,
-  //     lastName: req.body.contactOwnerLastName,
-  //   }).populate({
-  //     path: "user",
-  //     select: "fullNames"
-  //   }).exec();
-  // } else {
-  //   contactOwner = undefined;
-  // }
   const contact = new Contact({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
     jobTitle: req.body.jobTitle,
     phoneNo: req.body.phoneNo,
-    // contactOwner: contactOwner ? contactOwner._id : undefined,
     lifeCycle: req.body.lifeCycle,
-    // company: company ? company.code : undefined,
     lastActivityDate: req.body.lastActivityDate,
     leadStatus: req.body.leadStatus,
     createDate: req.body.createDate,
@@ -177,6 +160,7 @@ async function removeCompany(req, res) {
   await contact.save();
   return res.status(200).json(contact);
 }
+
 
 module.exports = {
   addContact,
