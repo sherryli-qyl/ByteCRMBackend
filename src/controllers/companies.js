@@ -1,6 +1,7 @@
 const Company = require("../models/company");
 const Contact = require("../models/contact");
 const User = require("../models/user");
+const { findRedunDant, findNew } = require('../utils/findDiff');
 
 async function addCompany(req, res) {
   const {
@@ -37,7 +38,7 @@ async function addCompany(req, res) {
 async function getCompanyByCode(req, res) {
   const { code } = req.params;
   const company = await Company.findById(code)
-    .populate("associatedContacts", "firstName lastName email jobTitle")
+    .populate("associatedContacts", "firstName lastName email jobTitle phoneNo")
     .populate("companyOwner", "firstName lastName")
     .exec();
   if (!company) {
@@ -53,10 +54,10 @@ async function searchCompanyByUserId(req, res) {
     { companyOwner: userId },
     "name companyDomain phoneNumber"
   );
-  
+
   let findCompanies = [];
   for (let i in companies) {
-    console.log( companies[i].companyDomain);
+    console.log(companies[i].companyDomain);
     if (
       companies[i].name.toUpperCase().includes(UpperCaseKeywords) ||
       companies[i].companyDomain && companies[i].companyDomain.toUpperCase().includes(UpperCaseKeywords)
@@ -175,6 +176,53 @@ async function removeContact(req, res) {
   //return res.sendStatus(204);
 }
 
+async function multiRefChange(req, res) {
+  const { code } = req.params;
+  const { contacts } = req.body;
+  console.log(code);
+  console.log(contacts);
+  const company = await Company.findById(code).exec();
+
+  if (!company) {
+    return res.status(404).json("company not exist");
+  }
+
+  const existContacts = company.associatedContacts;
+
+  const removedContacts = findRedunDant(existContacts, contacts);
+  console.log(2222);
+  console.log(removedContacts);
+
+  for (let i in removedContacts) {
+    company.associatedContacts.pull(removedContacts[i]);
+    
+    const contact = await Contact.findById(removedContacts[i]).exec();
+    if (!contact) {
+      return res.status(404).json("contact not exist");
+    }
+    contact.company = undefined;
+    await contact.save();
+  }
+
+  const addContacts = findNew(contacts, company.associatedContacts);
+
+  for (let i in addContacts) {
+    const contact = await Contact.findById(addContacts[i]).exec();
+    company.associatedContacts.addToSet(contact.id);
+    if (!contact) {
+      return res.status(404).json("contact not exist");
+    }
+    contact.company = company;
+    await contact.save();
+  }
+  await company.save();
+  const result = await Company.findById(code)
+  .populate("associatedContacts", "firstName lastName email jobTitle phoneNo")
+  .exec();
+  return res.status(200).json(result);
+}
+
+
 module.exports = {
   addCompany,
   getCompanyByCode,
@@ -184,4 +232,5 @@ module.exports = {
   addContact,
   removeContact,
   searchCompanyByUserId,
+  multiRefChange,
 };

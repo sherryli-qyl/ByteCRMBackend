@@ -9,7 +9,7 @@ const {
     addCompany,
     updateUser,
     searchContactByUserId,
-    removeCompany
+    removeCompany,
 } = require('../controllers/contacts');
 
 const router = express.Router();

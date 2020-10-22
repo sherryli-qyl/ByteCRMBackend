@@ -9,7 +9,8 @@ const {
        deleteCompany,
        addContact,
        removeContact,
-       searchCompanyByUserId
+       searchCompanyByUserId,
+       multiRefChange,
     } = require('../controllers/companies');//导入功能
 
 const router = express.Router();
@@ -22,6 +23,7 @@ router.delete('/:code', deleteCompany);
 router.get('/search/:userId/:keywords', searchCompanyByUserId);
 router.post('/:code/contacts/:id', addContact);
 router.delete('/:code/contacts/:id', removeContact);
+router.put('/:code/ref',multiRefChange);
 
 
 module.exports = router;
