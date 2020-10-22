@@ -36,7 +36,6 @@ async function getNoteByRelatedToId(req, res) {
   const { id } = req.params;
   const notes = await Note.find({relatedTo: id})
     .populate('createdBy', 'firstName lastName fullName')
-    .populate('relatedTo','firstName lastName email')
     .exec();
   
   if (!notes) {
