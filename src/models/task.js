@@ -5,7 +5,12 @@ const schema = new mongoose.Schema(
 		type: {
       type: String,
 			required: true,
-    },
+		},
+		
+		getRelatedTo: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Contact',
+		},
 
     value:{
 			type: String,
