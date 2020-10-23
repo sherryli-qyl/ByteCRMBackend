@@ -1,45 +1,28 @@
 const Contact = require("../models/contact");
 const Company = require("../models/company");
 const User = require("../models/user");
+const {findRedunDant, findNew} = require('../utils/findDiff');
 
 async function addContact(req, res) {
-  const company = await Company.findOne({ name: req.body.companyName }).populate({
-    path: "company",
-    select: "name"
-  }).exec();
-  let contactOwner;
-  if (req.body.contactOwnerLastName && req.body.contactOwnerFirstName !== "Unassigned") {
-    contactOwner = await User.findOne({
-      firstName: req.body.contactOwnerFirstName,
-      lastName: req.body.contactOwnerLastName,
-    }).populate({
-      path: "user",
-      select: "fullNames"
-    }).exec();
-  } else {
-    contactOwner = undefined;
-  }
   const contact = new Contact({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
     jobTitle: req.body.jobTitle,
     phoneNo: req.body.phoneNo,
-    contactOwner: contactOwner ? contactOwner._id : undefined,
     lifeCycle: req.body.lifeCycle,
-    company: company ? company.code : undefined,
     lastActivityDate: req.body.lastActivityDate,
     leadStatus: req.body.leadStatus,
     createDate: req.body.createDate,
   });
   await contact.save();
-  return res.json(contact);
+  return res.status(201).json(contact);
 }
 
 async function getContact(req, res) {
   const { id } = req.params;
   const contact = await Contact.findById(id)
-    .populate("company", "name")
+    .populate("company", "name companyDomain phoneNumber")
     .populate("contactOwner", "firstName lastName email")
     .exec();
   if (!contact) {
@@ -59,7 +42,9 @@ async function getAllContacts(req, res) {
       select: "firstName lastName",
     })
     .exec();
-  return res.status(200).json(contacts);
+  return contacts
+    ? res.status(200).json(contacts)
+    : res.status(404).json("No contacts");
   // // fields来自query params
   // const { page = 1, pageSize = 10, q = "", fields } = req.query;
   // const limit = Math.max(pageSize * 1, 10);
@@ -70,8 +55,9 @@ async function getAllContacts(req, res) {
 
 async function updateContact(req, res) {
   const { id } = req.params;
-  console.log(req.body);
-  const newContact = await Contact.findByIdAndUpdate(id, req.body, {new: true}).exec();
+  const newContact = await Contact.findByIdAndUpdate(id, req.body, {
+    new: true,
+  }).exec();
   if (!newContact) {
     return res.status(404).json("contact not found");
   }
@@ -83,7 +69,7 @@ async function deleteContact(req, res) {
   const contact = await Contact.findById(id).exec();
   if (contact.company) {
     const company = await Company.findById(contact.company).exec();
-    company.contacts.pull(contact._id);
+    company.associatedContacts.pull(contact._id);
     await company.save();
   }
   if (contact.contactOwner) {
@@ -92,7 +78,7 @@ async function deleteContact(req, res) {
     await user.save();
   }
   const deleteContact = await Contact.findByIdAndDelete(id).exec();
-  return res.status(200).json(deleteContact);
+  return res.status(204).json(deleteContact);
 }
 
 async function searchContactByUserId(req, res) {
@@ -151,7 +137,7 @@ async function addCompany(req, res) {
     return res.status(404).json("contact or company not exist");
   }
   contact.company = company;
-  company.contacts.addToSet(contact._id);
+  company.associatedContacts.addToSet(contact._id);
 
   await contact.save();
   await company.save();
@@ -167,13 +153,14 @@ async function removeCompany(req, res) {
     return res.status(404).json("contact or company not exist");
   }
 
-  company.contacts.pull(id);
+  company.associatedContacts.pull(id);
   contact.company = undefined;
 
   await company.save();
   await contact.save();
   return res.status(200).json(contact);
 }
+
 
 module.exports = {
   addContact,
