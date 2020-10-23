@@ -54,9 +54,31 @@ async function updateMeeting(req, res) {
     return res.json(newMeeting);
 }
 
+async function deleteMeeting(req, res) {
+    const {id} = req.params;
+    const meeting = await Meeting.findByIdAndDelete(id).exec();
+    if (!meeting) {
+	console.log("note");
+	  return res.status(404).json('email not found');
+	  
+	}
+	
+	/*
+    await Contact.updateMany(
+      { emailLogs: email._id },
+      {
+        $pull: {
+            emailLogs: email._id 
+        }
+      }
+    ).exec();*/
+    return res.sendStatus(204);
+  }
+
 module.exports = {
 	addMeeting,
 	getAllMeetings,
 	getMeetings,
-	updateMeeting
+	updateMeeting,
+	deleteMeeting
 }
