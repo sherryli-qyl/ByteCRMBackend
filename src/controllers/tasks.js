@@ -2,9 +2,10 @@ const Task = require('../models/task');
 const User = require('../models/user');
 
 async function addTask(req, res) { 
-	const { type, description, time, date, typeTask, priority, assignedToUser} = req.body;
+	const { getRelatedTo, type, description, time, date, typeTask, priority, assignedToUser, userId} = req.body;
 	const user = await User.findById(userId).exec();
 	const task = new Task({
+		getRelatedTo,
 		type,
 		description,
 		time, 
@@ -27,12 +28,12 @@ async function addTask(req, res) {
 
 
 
-async function getTasksByUserId(req, res) { 
+async function getTasksByGetRelatedToId(req, res) { 
 	const { id } = req.params;
-	const tasks = await Task.find({assignedToUser:id})
-	.populate('assignedToUser', 'firstName lastName email')
+	const tasks = await Task.find({getRelatedTo:id})
+	.populate('getRelatedTo')
 	.populate('user', 'firstName lastName fullName')
-	exec();
+	.exec();
 	return res.status(200).json(tasks);
 }
 
@@ -121,7 +122,7 @@ async function removeAssignedToUser(req,res){
 
 module.exports = {
 	addTask,
-	getTasksByUserId,
+	getTasksByGetRelatedToId,
 	getAllTasks,
 	updateTask,
 	deleteTask,
