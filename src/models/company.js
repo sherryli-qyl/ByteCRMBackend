@@ -1,75 +1,80 @@
-const mongoose = require ('mongoose'); 
+const mongoose = require("mongoose");
+const { testDate, testPhoneNum } = require("../utils/validator");
 
-const schema = new mongoose.Schema({ 
-    _id: {
-        type: String,
-        uppercase: true,
-        alias: 'code'
-    },
-    
-    name:{
-        type: String,
-        required: true
-    },
+const schema = new mongoose.Schema(
+  {
+    // id: {
+    //   type: String,
+    //   uppercase: true,
+    //   alias: "code",
+    // },
 
-    phoneNumber:{
-        type: String
-    }, 
-    
-    city:{
-        type: String
+    name: {
+      type: String,
+      required: true,
     },
 
-    country:{
-        type: String
+    companyDomain:{
+        type:String,
     },
 
-    industry:{
-        type: String,
+    phoneNumber: {
+      type: String,
     },
-    lastActivityDate: {
-        type: String,
-        validate: {
-          validator: (date) => {
-            return testDate(date);
-          },
-          msg: "Invalid date format",
+
+    city: {
+      type: String,
+    },
+
+    type:{
+        type:String
+    },
+
+    state_region:{
+        type:String
+    },
+
+    country: {
+      type: String,
+    },
+
+    industry: {
+      type: String,
+    },
+
+    lastLoggedCallDate: {
+      type: String,
+      validate: {
+        validator: (date) => {
+          return testDate(date);
         },
+        msg: "Invalid date format",
       },
-  
-      createDate: {
-        type: String,
-        validate: {
-          validator: (date) => {
-            return testDate(date);
-          },
-          msg: "Invalid date format",
-        },
-      },
-      companyOwner:{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    },
     
-    contacts: [{
-         type: mongoose.Schema.Types.ObjectId, ref: 'Contact' 
-        }],
-   
-    __v:{
-        type: Number,
-        select: false
-    }
-},
-    {
-        toJSON: {
-            virtuals: true
-        },
-        id: false,
-        timestamps: true
-    }
-);      
+    companyOwner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+
+    associatedContacts: [{
+        type: mongoose.Schema.Types.ObjectId, ref: 'Contact' 
+       }],
+
+    __v: {
+      type: Number,
+      select: false,
+    },
+  },
+  {
+    toJSON: {
+      virtuals: true,
+    },
+    timestamps: true,
+  }
+);
 
 // schema.virtual('code').get(function(){
 //     return 'virtual code';
 // });
 
-const model = mongoose.model('Company',schema); 
+const model = mongoose.model("Company", schema);
 
-module.exports = model; 
+module.exports = model;

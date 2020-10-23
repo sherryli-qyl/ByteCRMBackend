@@ -1,10 +1,11 @@
 const Contact = require('../models/contact');
 const User = require('../models/user');
 const Email = require('../models/email');
+const {checkDuplicateItem} = require('../utils/sortArray');
 
 
 async function logEmail(req, res) {
-    const { contacts,date,time,description,type,userId} = req.body;
+    const { contacts, date, time, description, type, userId } = req.body;
     const user = await User.findById(userId).exec();
     const email = new Email({
         description,
@@ -13,15 +14,15 @@ async function logEmail(req, res) {
         type,
     });
     email.user = user;
-    for (let i in contacts){
-        addContacts(contacts[i],email._id);
+    for (let i in contacts) {
+        addContacts(contacts[i], email._id);
         email.contacts.addToSet(contacts[i]);
     }
     await email.save();
-    const resEmail = await Email.findOne({_id:email._id})
-    .populate('contacts','firstName lastName email')
-    .populate('user', 'firstName lastName fullName')
-    .exec();
+    const resEmail = await Email.findOne({ _id: email._id })
+        .populate('contacts', 'firstName lastName email')
+        .populate('user', 'firstName lastName fullName')
+        .exec();
 
     return res.json(resEmail);
 }
@@ -36,19 +37,35 @@ async function getAllEmailLogs(req, res) {
 
 async function getEmailsByContactId(req, res) {
     const { id } = req.params;
-    const emails = await Email.find({contacts:id})
-    .populate('contacts','firstName lastName email')
-    .populate('user', 'firstName lastName fullName')
-    .exec();
+    const emails = await Email.find({ contacts: id })
+        .populate('contacts', 'firstName lastName email')
+        .populate('user', 'firstName lastName fullName')
+        .exec();
     return res.status(200).json(emails);
+}
+
+async function getEmailsByMultiContacts(req, res) {
+    const { ids } = req.params;
+    const contactsId = ids.split("&&");
+    let allEmails = [];
+    console.log(contactsId);
+    for (i in contactsId) {
+        const emails = await Email.find({ contacts: contactsId[i] })
+            .populate('contacts', 'firstName lastName email')
+            .populate('user', 'firstName lastName fullName')
+            .exec();
+        allEmails = allEmails.concat(emails);
+    }
+    allEmails = checkDuplicateItem(allEmails);
+    return res.status(200).json(allEmails);
 }
 
 async function updateEmail(req, res) {
     const { id } = req.params;
-    const {date,time,description} = req.body;
+    const { date, time, description } = req.body;
     const newEmail = await Email.findByIdAndUpdate(
         id,
-        {date,time,description},
+        { date, time, description },
     ).exec();
     if (!newEmail) {
         return res.status(404).json('email not found');
@@ -57,24 +74,24 @@ async function updateEmail(req, res) {
 }
 
 async function deleteEmail(req, res) {
-    const {id} = req.params;
+    const { id } = req.params;
     const email = await Email.findByIdAndDelete(id).exec();
     if (!email) {
-      return res.status(404).json('email not found');
+        return res.status(404).json('email not found');
     }
     await Contact.updateMany(
-      { emailLogs: email._id },
-      {
-        $pull: {
-            emailLogs: email._id 
+        { emailLogs: email._id },
+        {
+            $pull: {
+                emailLogs: email._id
+            }
         }
-      }
     ).exec();
     return res.sendStatus(204);
-  }
+}
 
 
-async function addContacts(contactId,emailId) {
+async function addContacts(contactId, emailId) {
     const contact = await Contact.findById(contactId).exec();
     if (!contact) {
         return res.status(404).json('contacts not exist');
@@ -83,8 +100,8 @@ async function addContacts(contactId,emailId) {
     await contact.save();
 };
 
-async function updateContacts(req,res) {
-    const {contactId,emailId} = req.params;
+async function updateContacts(req, res) {
+    const { contactId, emailId } = req.params;
     const contact = await Contact.findById(contactId).exec();
     const email = await Email.findById(emailId).exec();
     if (!contact || !email) {
@@ -98,8 +115,8 @@ async function updateContacts(req,res) {
 };
 
 
-async function removeContacts(req,res) {  
-    const {contactId,emailId} = req.params;
+async function removeContacts(req, res) {
+    const { contactId, emailId } = req.params;
     const contact = await Contact.findById(contactId).exec();
     const email = await Email.findById(emailId).exec();
     if (!contact || !email) {
@@ -108,17 +125,17 @@ async function removeContacts(req,res) {
     }
     contact.emailLogs.pull(emailId);
     email.contacts.pull(contactId);
-    if (email.contacts.length === 0){
+    if (email.contacts.length === 0) {
         await Email.findByIdAndDelete(email._id);
         await contact.save();
         return res.status(200).json("email has been deleted");
-        
+
     }
-    else{
+    else {
         await email.save();
         await contact.save();
         return res.status(200).json(contact);
-    } 
+    }
 }
 
 
@@ -132,4 +149,5 @@ module.exports = {
     updateContacts,
     removeContacts,
     getEmailsByContactId,
+    getEmailsByMultiContacts,
 }

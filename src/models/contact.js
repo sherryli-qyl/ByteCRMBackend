@@ -20,12 +20,6 @@ const schema = new mongoose.Schema(
 
     phoneNo: {
       type: String,
-      validate: {
-        validator: (number) => {
-          return testPhoneNum(number);
-        },
-        msg: "Invalid phone number format",
-      },
     },
 
     lifeCycle: {
@@ -71,7 +65,12 @@ const schema = new mongoose.Schema(
 
     emailLogs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Email" }],
 
-    company: { type: String, ref: "Company" },
+    company: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
+
+    __v: {
+      type: Number,
+      select: false,
+    },
   },
   {
     toJSON: {
