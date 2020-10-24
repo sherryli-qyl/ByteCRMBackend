@@ -5,6 +5,7 @@ const {
   addNote, 
   getNote, 
   getNoteByRelatedToId,
+  getNotesByMultiContacts,
   updateNote, 
   deleteNote,
   addComment, 
@@ -15,6 +16,7 @@ const router = express.Router();
 router.get('/', getAllNotes);
 router.get('/:id', getNote);
 router.get('/relatedTo/:id', getNoteByRelatedToId);
+router.get('/contacts/:ids', getNotesByMultiContacts)
 router.post('/', addNote);
 router.put('/:id', updateNote);
 router.delete('/:id', deleteNote);
