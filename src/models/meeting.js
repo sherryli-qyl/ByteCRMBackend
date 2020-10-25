@@ -17,11 +17,11 @@ const meetingSchema = new mongoose.Schema(
 			type: String,
 			required:true,
 		},
+		
+		user:{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
 	
-		time: {
-			type: String,
-			required: true,
-		},
+
+        contacts: [{type: mongoose.Schema.Types.ObjectId, ref: 'Contact' }],
 	
 		date: {
 			type: String,
@@ -30,24 +30,6 @@ const meetingSchema = new mongoose.Schema(
 		duration: {
 			type: String,
 			required: true,
-		},
-        organizer: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'User'
-		},
-	
-
-        attendees: 
-        [
-            { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'User' 
-            }
-        ],
-	
-		date:{
-			type: String,
-			required: true
 		},
 
 		time:{
