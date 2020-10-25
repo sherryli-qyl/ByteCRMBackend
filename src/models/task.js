@@ -44,7 +44,7 @@ const schema = new mongoose.Schema(
 
 		assignedToUser: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
      
-    user:{type:  mongoose.Schema.Types.ObjectId, ref: 'User'},
+    //user:{type:  mongoose.Schema.Types.ObjectId, ref: 'User'},
         
     
 
