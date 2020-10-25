@@ -7,7 +7,7 @@ const schema = new mongoose.Schema(
 			required: true,
 		},
 		
-		getRelatedTo: {
+		relatedTo: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Contact',
 		},
@@ -42,7 +42,9 @@ const schema = new mongoose.Schema(
 			required:true,
 		},
 
-		assignedToUser: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+		assignedTo: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+
+		createdBy:{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
      
     //user:{type:  mongoose.Schema.Types.ObjectId, ref: 'User'},
         

@@ -2,21 +2,22 @@ const Task = require('../models/task');
 const User = require('../models/user');
 
 async function addTask(req, res) { 
-	const { getRelatedTo, type, description, time, date, typeTask, priority, assignedToUser} = req.body;
-	const user = await User.findById(assignedToUser).exec();
+	const { relatedTo, type, description, time, date, typeTask, priority, assignedTo,createdBy} = req.body;
+	const user = await User.findById(assignedTo).exec();
 	const task = new Task({
-		getRelatedTo,
+		relatedTo,
 		type,
 		description,
 		time, 
 		date, 
 		typeTask,
 		priority, 
+		createdBy,
 	});
 	task.user = user;
-	for (let i in assignedToUser){
-		addAssignedToUser(assignedToUser[i],task._id);
-		task.assignedToUser.addToSet(assignedToUser[i]);
+	for (let i in assignedTo){
+		addAssignedToUser(assignedTo[i],task._id);
+		task.assignedTo.addToSet(assignedTo[i]);
 	}
 	await task.save();
 	const resTask = await Task.findOne({_id:task._id})
@@ -28,11 +29,11 @@ async function addTask(req, res) {
 
 
 
-async function getTasksByGetRelatedToId(req, res) { 
+async function getTasksByContactId(req, res) { 
 	const { id } = req.params;
-	const tasks = await Task.find({getRelatedTo:id})
-	.populate('getRelatedTo')
-	.populate('assignedToUser', 'firstName lastName fullName')
+	const tasks = await Task.find({relatedTo:id})
+	.populate('assignedTo', 'firstName lastName fullName')
+	.populate('createdBy', 'firstName lastName fullName')
 	.exec();
 	return res.status(200).json(tasks);
 }
@@ -91,8 +92,8 @@ async function updateAssignedToUser(req, res){
 	if(!user || !task){
 		return res.status(404).json('users or task not exist');
 	}
-	user.createTasks.addToSet(taskId);
-	task.assignedToUser.addToSet(userId);
+	user.tasks.addToSet(taskId);
+	task.assignedTo.addToSet(userId);
 	await user.save();
 	await task.save();
 	return res.status(200).json(user);
@@ -106,9 +107,9 @@ async function removeAssignedToUser(req,res){
 			const errorMessage = res.status(404).json('user or task not exist');
 			return errorMessage;
 	}
-	user.createTasks.pull(taskId);
-	task.assignedToUser.pull(userId);
-	if (task.assignedToUser.length === 0){
+	user.tasks.pull(taskId);
+	task.assignedTo.pull(userId);
+	if (task.assignedTo.length === 0){
 			await Task.findByIdAndDelete(task._id);
 			await user.save();
 			return res.status(200).json("task has been deleted");			
@@ -122,7 +123,7 @@ async function removeAssignedToUser(req,res){
 
 module.exports = {
 	addTask,
-	getTasksByGetRelatedToId,
+	getTasksByContactId,
 	getAllTasks,
 	updateTask,
 	deleteTask,

@@ -2,7 +2,7 @@ const express = require('express');
 
 const { 
   addTask,
-	getTasksByGetRelatedToId,
+	getTasksByContactId,
 	getAllTasks,
 	updateTask,
 	deleteTask,
@@ -14,7 +14,7 @@ const {
 const router = express.Router();
 
 router.get('/', getAllTasks);
-router.get('/:id', getTasksByGetRelatedToId);
+router.get('/:id', getTasksByContactId);
 router.post('/', addTask);
 router.put('/:id', updateTask);
 router.put('/:taskId/assignedToUser/:userId', updateAssignedToUser);
