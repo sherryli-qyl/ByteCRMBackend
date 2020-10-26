@@ -2,8 +2,8 @@ const Task = require('../models/task');
 const User = require('../models/user');
 
 async function addTask(req, res) { 
-	const { getRelatedTo, type, description, time, date, typeTask, priority, assignedToUser} = req.body;
-	const user = await User.findById(assignedToUser).exec();
+	const { getRelatedTo, type, description, time, date, typeTask, priority, assignedToUser, userId} = req.body;
+	const user = await User.findById(userId).exec();
 	const task = new Task({
 		getRelatedTo,
 		type,
@@ -20,7 +20,8 @@ async function addTask(req, res) {
 	}
 	await task.save();
 	const resTask = await Task.findOne({_id:task._id})
-	.populate('assignedToUser', 'firstName lastName fullName')
+	.populate('assignedToUser', 'firstName lastName email')
+	.populate('user', 'firstName lastName fullName')
 	.exec();
 
 	return res.json(resTask);
@@ -32,7 +33,7 @@ async function getTasksByGetRelatedToId(req, res) {
 	const { id } = req.params;
 	const tasks = await Task.find({getRelatedTo:id})
 	.populate('getRelatedTo')
-	.populate('assignedToUser', 'firstName lastName fullName')
+	.populate('user', 'firstName lastName fullName')
 	.exec();
 	return res.status(200).json(tasks);
 }
