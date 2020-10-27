@@ -2,29 +2,27 @@ const Task = require('../models/task');
 const User = require('../models/user');
 
 async function addTask(req, res) { 
-	const { relatedTo, type, description, time, date, typeTask, priority, assignedTo,createdBy} = req.body;
-	const user = await User.findById(assignedTo).exec();
+	const { contact, type, description, time, date, taskType, priority, users,createdBy} = req.body;
 	const task = new Task({
-		relatedTo,
+		contact,
 		type,
 		description,
 		time, 
 		date, 
-		typeTask,
+		taskType,
 		priority, 
 		createdBy,
 	});
-	task.user = user;
-	for (let i in assignedTo){
-		addAssignedToUser(assignedTo[i],task._id);
-		task.assignedTo.addToSet(assignedTo[i]);
+	
+	for (let i in users){		
+		addAssignedToUser(users[i],task._id)
+		task.users.addToSet(users[i]);
 	}
+
 	await task.save();
 	const resTask = await Task.findOne({_id:task._id})
-	.populate('assignedToUser', 'firstName lastName email')
-	.populate('user', 'firstName lastName fullName')
+	.populate('users', 'firstName lastName email fullName')
 	.exec();
-
 	return res.json(resTask);
 }
 
@@ -33,7 +31,7 @@ async function addTask(req, res) {
 async function getTasksByContactId(req, res) { 
 	const { id } = req.params;
 	const tasks = await Task.find({relatedTo:id})
-	.populate('assignedTo', 'firstName lastName fullName')
+	.populate('users', 'firstName lastName fullName email')
 	.populate('createdBy', 'firstName lastName fullName')
 	.exec();
 	return res.status(200).json(tasks);
@@ -49,10 +47,10 @@ async function getAllTasks(req, res) {
 
 async function updateTask(req, res) { 
 	const { id } = req.params;
-	const { date, time, description, typeTask, priority} = req.body;
+	const { date, time, description, taskType, priority} = req.body;
 	const newTask = await Task.findByIdAndUpdate(
 		id,
-		{ date, time, description, typeTask, priority},
+		{ date, time, description, taskType, priority},
 	).exec();
 	if (!newTask) {
 		return res.status(404).json('tasks not found');
@@ -67,10 +65,10 @@ async function deleteTask(req, res) {
 		return res.status(404).json('task not found');
 	}
 	await User.updateMany(
-		{ createTasks: task._id },
+		{ tasks: task._id },
 		{
 			$pull: {
-					createTasks: task._id 
+					tasks: task._id 
 			}
 		}
 	).exec();
@@ -82,23 +80,24 @@ async function addAssignedToUser(userId, taskId) {
 	if(!user){
 		return res.status(404).json('users not exist');
 	}
-	user.createTasks.addToSet(taskId);
+	user.tasks.addToSet(taskId);
 	await user.save();
 }
 
-async function updateAssignedToUser(req, res){
-	const {userId, taskId} = req.params;
-	const user = await User.findById(userId).exec();
+async function updateAssignedUser(req, res) {
+	const { taskId,userId} = req.params;
 	const task = await Task.findById(taskId).exec();
-	if(!user || !task){
-		return res.status(404).json('users or task not exist');
+	const user =await User.findById(userId).execPopulate();
+
+	if (!task || !user) {
+	  return res.status(404).json("task or user not exist");
 	}
-	user.tasks.addToSet(taskId);
-	task.assignedTo.addToSet(userId);
-	await user.save();
-	await task.save();
-	return res.status(200).json(user);
-}
+	user.addToSet(userId);
+    task.users.addToSet(taskId);
+    await user.save();
+    await task.save();
+    return res.status(200).json(task);
+  }
 
 async function removeAssignedToUser(req,res){
 	const {userId,taskId} = req.params;
@@ -109,8 +108,8 @@ async function removeAssignedToUser(req,res){
 			return errorMessage;
 	}
 	user.tasks.pull(taskId);
-	task.assignedTo.pull(userId);
-	if (task.assignedTo.length === 0){
+	task.users.pull(userId);
+	if (task.users.length === 0){
 			await Task.findByIdAndDelete(task._id);
 			await user.save();
 			return res.status(200).json("task has been deleted");			
@@ -128,7 +127,7 @@ module.exports = {
 	getAllTasks,
 	updateTask,
 	deleteTask,
-	updateAssignedToUser,
+	updateAssignedUser,
 	removeAssignedToUser,
 	
 
