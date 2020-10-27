@@ -21,7 +21,8 @@ async function addTask(req, res) {
 	}
 	await task.save();
 	const resTask = await Task.findOne({_id:task._id})
-	.populate('assignedToUser', 'firstName lastName fullName')
+	.populate('assignedToUser', 'firstName lastName email')
+	.populate('user', 'firstName lastName fullName')
 	.exec();
 
 	return res.json(resTask);
