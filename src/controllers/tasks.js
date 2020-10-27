@@ -2,7 +2,7 @@ const Task = require('../models/task');
 const User = require('../models/user');
 
 async function addTask(req, res) { 
-	const { contact, type, description, time, date, taskType, priority, users,createdBy,name} = req.body;
+	const { contact, type, description, time, date, taskType, priority, users,createdBy,name,status} = req.body;
 	const task = new Task({
 		contact,
 		name,
@@ -13,6 +13,7 @@ async function addTask(req, res) {
 		taskType,
 		priority, 
 		createdBy,
+		status,
 	});
 	
 	for (let i in users){		
@@ -48,10 +49,10 @@ async function getAllTasks(req, res) {
 
 async function updateTask(req, res) { 
 	const { id } = req.params;
-	const { name,date, time, description, taskType, priority} = req.body;
+	const { name,date, time, description, taskType, priority,status} = req.body;
 	const newTask = await Task.findByIdAndUpdate(
 		id,
-		{ date, time, description, taskType, priority,name},
+		{ date, time, description, taskType, priority,name,status},
 	).exec();
 	if (!newTask) {
 		return res.status(404).json('tasks not found');
