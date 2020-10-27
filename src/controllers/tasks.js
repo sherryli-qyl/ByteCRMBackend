@@ -2,9 +2,10 @@ const Task = require('../models/task');
 const User = require('../models/user');
 
 async function addTask(req, res) { 
-	const { contact, type, description, time, date, taskType, priority, users,createdBy} = req.body;
+	const { contact, type, description, time, date, taskType, priority, users,createdBy,name} = req.body;
 	const task = new Task({
 		contact,
+		name,
 		type,
 		description,
 		time, 
@@ -30,7 +31,7 @@ async function addTask(req, res) {
 
 async function getTasksByContactId(req, res) { 
 	const { id } = req.params;
-	const tasks = await Task.find({relatedTo:id})
+	const tasks = await Task.find({contact:id})
 	.populate('users', 'firstName lastName fullName email')
 	.populate('createdBy', 'firstName lastName fullName')
 	.exec();
@@ -47,10 +48,10 @@ async function getAllTasks(req, res) {
 
 async function updateTask(req, res) { 
 	const { id } = req.params;
-	const { date, time, description, taskType, priority} = req.body;
+	const { name,date, time, description, taskType, priority} = req.body;
 	const newTask = await Task.findByIdAndUpdate(
 		id,
-		{ date, time, description, taskType, priority},
+		{ date, time, description, taskType, priority,name},
 	).exec();
 	if (!newTask) {
 		return res.status(404).json('tasks not found');
@@ -92,7 +93,7 @@ async function updateAssignedUser(req, res) {
 	if (!task || !user) {
 	  return res.status(404).json("task or user not exist");
 	}
-	user.addToSet(userId);
+	user.tasks.addToSet(userId);
     task.users.addToSet(taskId);
     await user.save();
     await task.save();
@@ -129,6 +130,4 @@ module.exports = {
 	deleteTask,
 	updateAssignedUser,
 	removeAssignedToUser,
-	
-
 }

@@ -7,14 +7,14 @@ const schema = new mongoose.Schema(
 			required: true,
 		},
 
+		name:{
+			type: String,
+			required: true,
+		},
+
 		contact: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Contact',
-		},
-
-		value: {
-			type: String,
-			required: false,
 		},
 
 		description: {
