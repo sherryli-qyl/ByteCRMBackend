@@ -1,12 +1,12 @@
 const express = require('express');
 const { 
     addUser,
-    getAllUsers,
+    searchUser
  } = require('../controllers/users');
 
 const router = express.Router();
 
 router.post('/', addUser);
-router.get('/', getAllUsers);
+router.get('/serach/:keyword', searchUser);
 
 module.exports = router;
