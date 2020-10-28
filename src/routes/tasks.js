@@ -7,7 +7,8 @@ const {
 	updateTask,
 	deleteTask,
 	updateAssignedUser,
-	removeAssignedToUser
+	removeAssignedToUser,
+	getTasksByMultiContacts,
   
 } = require('../controllers/tasks');
 
@@ -15,6 +16,7 @@ const router = express.Router();
 
 router.get('/', getAllTasks);
 router.get('/:id', getTasksByContactId);
+router.get('/contacts/:ids',getTasksByMultiContacts);
 router.post('/', addTask);
 router.put('/:id', updateTask);
 router.put('/:taskId/users', updateAssignedUser);
