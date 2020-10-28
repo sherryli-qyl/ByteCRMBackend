@@ -7,11 +7,6 @@ const emailSchema = new mongoose.Schema(
       required: true,
     },
 
-    value:{
-        type: String,
-        required:false,
-    },
-
     description:{
         type: String,
         required:true,

@@ -1,27 +1,32 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema(
- 	{
+	{
 		type: {
-      type: String,
+			type: String,
 			required: true,
 		},
-		
-		getRelatedTo: {
+
+		name:{
+			type: String,
+			required: true,
+		},
+
+		status:{
+			type: String,
+			required: true,
+		},
+
+		contact: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Contact',
 		},
 
-    value:{
+		description: {
 			type: String,
-			required:false,
+			required: true,
 		},
-		
-		description:{
-			type: String,
-			required:true,
-		},
-		
+
 		time: {
 			type: String,
 			required: true,
@@ -32,21 +37,20 @@ const schema = new mongoose.Schema(
 			required: true,
 		},
 
-		typeTask: {
-      type: String,
+		taskType: {
+			type: String,
 			required: true,
-    },
+		},
 
 		priority: {
 			type: String,
-			required:true,
+			required: true,
 		},
 
-		assignedToUser: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
-     
-    user:{type:  mongoose.Schema.Types.ObjectId, ref: 'User'},
-        
-    
+		users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+
+		createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+
 
 		__v: {
 			type: Number,
