@@ -18,17 +18,18 @@ async function addUser(req, res) {
   await user.hashPassword();
   await user.save();
   const token = generateToken(user._id);
-  return res.json({firstName, lastName, email, token});
+  return res.json({ firstName, lastName, email, token });
 }
 
-async function searchUser(req,res){
-  const {keywords,id} = req.params;
+async function searchUser(req, res) {
+  const { keywords, id } = req.params;
   const UpperCaseKeywords = keywords.toUpperCase();
-  const user = await User.findById({_id:id} ,"firstName lastName fullName email")
-  .populate("relatedUsers","firstName lastName email fullName")
-  .exec();
-  
+  const user = await User.findById({ _id: id }, "firstName lastName fullName email")
+    .populate("relatedUsers", "firstName lastName email fullName")
+    .exec();
+
   let findUsers = [];
+  
   for (let i in user.relatedUsers) {
     if (
       user.relatedUsers[i].fullName.toUpperCase().includes(UpperCaseKeywords) ||
@@ -37,6 +38,12 @@ async function searchUser(req,res){
       findUsers.push(user.relatedUsers[i]);
     }
   }
+
+  if (user.fullName.toUpperCase().includes(UpperCaseKeywords) ||
+    user.email.toUpperCase().includes(UpperCaseKeywords)) {
+    findUsers.push(user);
+  }
+
   if (findUsers.length >= 1) {
     return res.status(200).json(findUsers);
   } else {
@@ -44,11 +51,11 @@ async function searchUser(req,res){
   }
 }
 
-async function addRelatedUser(req,res){
-  const {id,relatedId} = req.params;
+async function addRelatedUser(req, res) {
+  const { id, relatedId } = req.params;
   const user = await User.findById(id).exec();
   const relatedUser = await User.findById(relatedId).exec();
-  if(!user || !relatedUser){
+  if (!user || !relatedUser) {
     return res.status(404).json("no user found");
   }
   user.relatedUsers.addToSet(relatedId);
@@ -58,7 +65,7 @@ async function addRelatedUser(req,res){
   return res.status(200).json(user);
 }
 
-module.exports = { 
+module.exports = {
   addUser,
   searchUser,
   addRelatedUser
