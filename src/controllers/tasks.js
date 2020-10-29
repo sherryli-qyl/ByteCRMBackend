@@ -1,5 +1,6 @@
 const Task = require('../models/task');
 const User = require('../models/user');
+const {checkDuplicateItem} = require('../utils/sortArray');
 
 async function addTask(req, res) { 
 	const { contact, type, description, time, date, taskType, priority, users,createdBy,name,status} = req.body;
@@ -47,6 +48,23 @@ async function getAllTasks(req, res) {
     return res.status(200).json(tasks);
 }
 
+async function getTasksByMultiContacts(req, res) {
+    const { ids } = req.params;
+    const contactsId = ids.split("&&");
+    let allTasks = [];
+    console.log(contactsId);
+    for (i in contactsId) {
+        const tasks = await Task.find({ contact: contactsId[i] })
+            .populate('contact', 'firstName lastName email')
+            .populate('user', 'firstName lastName fullName')
+            .exec();
+        allTasks = allTasks.concat(tasks);
+	}
+	allTasks = checkDuplicateItem(allTasks);
+	console.log(allTasks);
+    return res.status(200).json(allTasks);
+}
+
 async function updateTask(req, res) { 
 	const { id } = req.params;
 	const { name,date, time, description, taskType, priority,status} = req.body;
@@ -89,13 +107,13 @@ async function addAssignedToUser(userId, taskId) {
 async function updateAssignedUser(req, res) {
 	const { taskId,userId} = req.params;
 	const task = await Task.findById(taskId).exec();
-	const user =await User.findById(userId).execPopulate();
+	const user =await User.findById(userId).exec();
 
 	if (!task || !user) {
 	  return res.status(404).json("task or user not exist");
 	}
-	user.tasks.addToSet(userId);
-    task.users.addToSet(taskId);
+	user.tasks.addToSet(taskId);
+    task.users.addToSet(userId);
     await user.save();
     await task.save();
     return res.status(200).json(task);
@@ -126,6 +144,7 @@ async function removeAssignedToUser(req,res){
 module.exports = {
 	addTask,
 	getTasksByContactId,
+	getTasksByMultiContacts,
 	getAllTasks,
 	updateTask,
 	deleteTask,
