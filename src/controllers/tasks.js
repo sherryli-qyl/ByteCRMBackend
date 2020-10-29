@@ -107,13 +107,13 @@ async function addAssignedToUser(userId, taskId) {
 async function updateAssignedUser(req, res) {
 	const { taskId,userId} = req.params;
 	const task = await Task.findById(taskId).exec();
-	const user =await User.findById(userId).execPopulate();
+	const user =await User.findById(userId).exec();
 
 	if (!task || !user) {
 	  return res.status(404).json("task or user not exist");
 	}
-	user.tasks.addToSet(userId);
-    task.users.addToSet(taskId);
+	user.tasks.addToSet(taskId);
+    task.users.addToSet(userId);
     await user.save();
     await task.save();
     return res.status(200).json(task);
