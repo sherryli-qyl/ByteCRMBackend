@@ -55,8 +55,8 @@ async function getTasksByMultiContacts(req, res) {
     console.log(relatedIds);
     for (i in relatedIds) {
         const tasks = await Task.find({ relatedTo: relatedIds[i] })
-            .populate('contact', 'firstName lastName email')
-            .populate('user', 'firstName lastName fullName')
+            .populate('relatedTo', 'firstName lastName email')
+            .populate('users', 'firstName lastName fullName email')
             .exec();
         allTasks = allTasks.concat(tasks);
 	}
