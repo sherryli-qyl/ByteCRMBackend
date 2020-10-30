@@ -3,9 +3,9 @@ const User = require('../models/user');
 const {checkDuplicateItem} = require('../utils/sortArray');
 
 async function addTask(req, res) { 
-	const { contact, type, description, time, date, taskType, priority, users,createdBy,name,status} = req.body;
+	const { relatedTo, type, description, time, date, taskType, priority, users,createdBy,name,status} = req.body;
 	const task = new Task({
-		contact,
+		relatedTo,
 		name,
 		type,
 		description,
@@ -33,7 +33,7 @@ async function addTask(req, res) {
 
 async function getTasksByContactId(req, res) { 
 	const { id } = req.params;
-	const tasks = await Task.find({contact:id})
+	const tasks = await Task.find({relatedTo:id})
 	.populate('users', 'firstName lastName fullName email')
 	.populate('createdBy', 'firstName lastName fullName')
 	.exec();
@@ -50,13 +50,13 @@ async function getAllTasks(req, res) {
 
 async function getTasksByMultiContacts(req, res) {
     const { ids } = req.params;
-    const contactsId = ids.split("&&");
+    const relatedIds = ids.split("&&");
     let allTasks = [];
-    console.log(contactsId);
-    for (i in contactsId) {
-        const tasks = await Task.find({ contact: contactsId[i] })
-            .populate('contact', 'firstName lastName email')
-            .populate('user', 'firstName lastName fullName')
+    console.log(relatedIds);
+    for (i in relatedIds) {
+        const tasks = await Task.find({ relatedTo: relatedIds[i] })
+            .populate('relatedTo', 'firstName lastName email')
+            .populate('users', 'firstName lastName fullName email')
             .exec();
         allTasks = allTasks.concat(tasks);
 	}
