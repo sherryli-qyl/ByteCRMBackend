@@ -17,9 +17,8 @@ const schema = new mongoose.Schema(
 			required: true,
 		},
 
-		contact: {
+		relatedTo: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Contact',
 		},
 
 		description: {
