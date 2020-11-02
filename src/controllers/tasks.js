@@ -1,38 +1,41 @@
 const Task = require('../models/task');
 const User = require('../models/user');
+const {checkDuplicateItem} = require('../utils/sortArray');
 
 async function addTask(req, res) { 
-	const { getRelatedTo, type, description, time, date, typeTask, priority, assignedToUser, userId} = req.body;
-	const user = await User.findById(userId).exec();
+	const { relatedTo, type, description, time, date, taskType, priority, users,createdBy,name,status} = req.body;
 	const task = new Task({
-		getRelatedTo,
+		relatedTo,
+		name,
 		type,
 		description,
 		time, 
 		date, 
-		typeTask,
+		taskType,
 		priority, 
+		createdBy,
+		status,
 	});
-	task.user = user;
-	for (let i in assignedToUser){
-		addAssignedToUser(assignedToUser[i],task._id);
-		task.assignedToUser.addToSet(assignedToUser[i]);
+	
+	for (let i in users){		
+		addAssignedToUser(users[i],task._id)
+		task.users.addToSet(users[i]);
 	}
+
 	await task.save();
 	const resTask = await Task.findOne({_id:task._id})
-	.populate('user', 'firstName lastName fullName')
+	.populate('users', 'firstName lastName email fullName')
 	.exec();
-
 	return res.json(resTask);
 }
 
 
 
-async function getTasksByGetRelatedToId(req, res) { 
+async function getTasksByContactId(req, res) { 
 	const { id } = req.params;
-	const tasks = await Task.find({getRelatedTo:id})
-	.populate('getRelatedTo')
-	.populate('user', 'firstName lastName fullName')
+	const tasks = await Task.find({relatedTo:id})
+	.populate('users', 'firstName lastName fullName email')
+	.populate('createdBy', 'firstName lastName fullName')
 	.exec();
 	return res.status(200).json(tasks);
 }
@@ -45,12 +48,29 @@ async function getAllTasks(req, res) {
     return res.status(200).json(tasks);
 }
 
+async function getTasksByMultiContacts(req, res) {
+    const { ids } = req.params;
+    const relatedIds = ids.split("&&");
+    let allTasks = [];
+    console.log(relatedIds);
+    for (i in relatedIds) {
+        const tasks = await Task.find({ relatedTo: relatedIds[i] })
+            .populate('relatedTo', 'firstName lastName email')
+            .populate('users', 'firstName lastName fullName email')
+            .exec();
+        allTasks = allTasks.concat(tasks);
+	}
+	allTasks = checkDuplicateItem(allTasks);
+	console.log(allTasks);
+    return res.status(200).json(allTasks);
+}
+
 async function updateTask(req, res) { 
 	const { id } = req.params;
-	const { date, time, description, typeTask, priority} = req.body;
+	const { name,date, time, description, taskType, priority,status} = req.body;
 	const newTask = await Task.findByIdAndUpdate(
 		id,
-		{ date, time, description, typeTask, priority},
+		{ date, time, description, taskType, priority,name,status},
 	).exec();
 	if (!newTask) {
 		return res.status(404).json('tasks not found');
@@ -65,10 +85,10 @@ async function deleteTask(req, res) {
 		return res.status(404).json('task not found');
 	}
 	await User.updateMany(
-		{ createTasks: task._id },
+		{ tasks: task._id },
 		{
 			$pull: {
-					createTasks: task._id 
+					tasks: task._id 
 			}
 		}
 	).exec();
@@ -80,23 +100,24 @@ async function addAssignedToUser(userId, taskId) {
 	if(!user){
 		return res.status(404).json('users not exist');
 	}
-	user.createTasks.addToSet(taskId);
+	user.tasks.addToSet(taskId);
 	await user.save();
 }
 
-async function updateAssignedToUser(req, res){
-	const {userId, taskId} = req.params;
-	const user = await User.findById(userId).exec();
+async function updateAssignedUser(req, res) {
+	const { taskId,userId} = req.params;
 	const task = await Task.findById(taskId).exec();
-	if(!user || !task){
-		return res.status(404).json('users or task not exist');
+	const user =await User.findById(userId).exec();
+
+	if (!task || !user) {
+	  return res.status(404).json("task or user not exist");
 	}
-	user.createTasks.addToSet(taskId);
-	task.assignedToUser.addToSet(userId);
-	await user.save();
-	await task.save();
-	return res.status(200).json(user);
-}
+	user.tasks.addToSet(taskId);
+    task.users.addToSet(userId);
+    await user.save();
+    await task.save();
+    return res.status(200).json(task);
+  }
 
 async function removeAssignedToUser(req,res){
 	const {userId,taskId} = req.params;
@@ -106,9 +127,9 @@ async function removeAssignedToUser(req,res){
 			const errorMessage = res.status(404).json('user or task not exist');
 			return errorMessage;
 	}
-	user.createTasks.pull(taskId);
-	task.assignedToUser.pull(userId);
-	if (task.assignedToUser.length === 0){
+	user.tasks.pull(taskId);
+	task.users.pull(userId);
+	if (task.users.length === 0){
 			await Task.findByIdAndDelete(task._id);
 			await user.save();
 			return res.status(200).json("task has been deleted");			
@@ -122,12 +143,11 @@ async function removeAssignedToUser(req,res){
 
 module.exports = {
 	addTask,
-	getTasksByGetRelatedToId,
+	getTasksByContactId,
+	getTasksByMultiContacts,
 	getAllTasks,
 	updateTask,
 	deleteTask,
-	updateAssignedToUser,
+	updateAssignedUser,
 	removeAssignedToUser,
-	
-
 }

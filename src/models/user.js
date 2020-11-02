@@ -39,6 +39,11 @@ const schema = new mongoose.Schema({
     },
   },
 
+  relatedUsers:[
+    {
+    type: mongoose.Schema.Types.ObjectId, ref: 'User'}
+  ],
+
   contacts: [
     {
     type: mongoose.Schema.Types.ObjectId, ref: 'Contact'}
@@ -49,7 +54,7 @@ const schema = new mongoose.Schema({
     type: String, ref: 'Company'}
   ],
 
-  createTasks: [{type: mongoose.Schema.Types.ObjectId, ref: 'Task'}],
+  tasks: [{type: mongoose.Schema.Types.ObjectId, ref: 'Task'}],
 
   __v: {
     type: Number,
@@ -66,10 +71,9 @@ const schema = new mongoose.Schema({
 //Model.static
 //document.instance
 
-schema.virtual('fullName').get(function () {
+schema.virtual("fullName").get(function () {
   const fullName = `${this.firstName} ${this.lastName}`;
   return fullName;
-
 });
 
 schema.methods.hashPassword = async function () {

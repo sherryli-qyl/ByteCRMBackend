@@ -2,23 +2,25 @@ const express = require('express');
 
 const { 
   addTask,
-	getTasksByGetRelatedToId,
+	getTasksByContactId,
 	getAllTasks,
 	updateTask,
 	deleteTask,
-	updateAssignedToUser,
-	removeAssignedToUser
+	updateAssignedUser,
+	removeAssignedToUser,
+	getTasksByMultiContacts,
   
 } = require('../controllers/tasks');
 
 const router = express.Router();
 
 router.get('/', getAllTasks);
-router.get('/:id', getTasksByGetRelatedToId);
+router.get('/:id', getTasksByContactId);
+router.get('/contacts/:ids',getTasksByMultiContacts);
 router.post('/', addTask);
 router.put('/:id', updateTask);
-router.put('/:taskId/assignedToUser/:userId', updateAssignedToUser);
 router.delete('/:id', deleteTask);
+router.put('/:taskId/assignedToUser/:userId', updateAssignedUser);
 router.delete('/:taskId/assignedToUser/:userId', removeAssignedToUser);
 
 

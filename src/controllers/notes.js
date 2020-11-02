@@ -1,5 +1,6 @@
 const Note = require('../models/note');
 const User = require('../models/user');
+const { checkDuplicateItem } = require('../utils/sortArray');
 
 async function addNote(req, res) { 
   const { relatedTo, onModel, content, createdBy, comments, type, isDeleted } = req.body;
@@ -44,7 +45,23 @@ async function getNoteByRelatedToId(req, res) {
     return res.status(404).json(id);
   }
   return res.status(200).json(notes);
+}
 
+
+async function getNotesByMultiContacts(req, res) {
+  const { ids } = req.params;
+  const contactsId = ids.split("&&");
+  let allNotes = [];
+  
+  for (i in contactsId) {
+    const notes = await Note.find({ relatedTo: contactsId[i] })
+      .populate('createdBy', 'firstName lastName fullName')
+      .populate('relatedTo')
+      .exec();
+    allNotes = allNotes.concat(notes);
+  }
+  allNotes = checkDuplicateItem(allNotes);
+  return res.status(200).json(allNotes);
 }
 
 
@@ -106,6 +123,7 @@ module.exports = {
   addNote,
   getNote,
   getNoteByRelatedToId,
+  getNotesByMultiContacts,
   getAllNotes,
   updateNote,
   deleteNote,

@@ -1,8 +1,9 @@
 const Meeting = require('../models/meeting');
 const Contact = require('../models/contact');
+const {checkDuplicateItem} = require('../utils/sortArray');
 
 async function addMeeting(req, res) { 
-	const { description,type,title,user,contacts,date,time,duration} = req.body;
+	const { description,type,title,user,contacts,date,time,duration,outcome} = req.body;
 	const meeting = new Meeting({
 		title,
 		user,
@@ -11,11 +12,17 @@ async function addMeeting(req, res) {
 		time,
 		description,
 		type,
-		duration,
+        duration,
+        outcome,
 		
 	});
-	await meeting.save();
-	return res.json(meeting);
+    await meeting.save();
+    const resMeeting = await Meeting.findOne({ _id: meeting._id })
+        .populate('contacts', 'firstName lastName email')
+        .populate('user', 'firstName lastName fullName')
+        .exec();
+    return res.json(resMeeting);
+	//return res.json(meeting);
 }
 
 async function getAllMeetings(req, res) { 
@@ -25,28 +32,51 @@ async function getAllMeetings(req, res) {
 
 async function getMeetings(req, res) { 
 	const id =req.params.id;
-	const meetings = await Meeting.find().exec();
+    const meetings = await Meeting.find()
+    .exec();
 	const matchedmeetings = [];
 	
  	for(let i in meetings){
 		 if(meetings[i].contacts.includes(id))
 		  {
-			matchedmeetings.push(meetings[i]);
+            const infomeeting = await Meeting.findById(meetings[i]._id)
+            .populate('contacts', 'firstName lastName email')
+            .populate('user', 'firstName lastName fullName')
+            .exec();
+			matchedmeetings.push(infomeeting);
 			}
-	 }
+	 }	 
+	 return res.status(200).json(matchedmeetings);	
+}
 
-
-	 
-	 return res.status(200).json(matchedmeetings);
-	
+async function getMeetingsByMultiContacts(req, res){
+    const { ids } = req.params;
+    const contactsId = ids.split("&&");
+    const matchedmeetings = [];
+    const meetings = await Meeting.find();
+    for (i in contactsId) {
+        for(let j in meetings){
+            if(meetings[j].contacts.includes(contactsId[i]))
+             {
+               const infomeeting = await Meeting.findById(meetings[j]._id)
+               .populate('contacts', 'firstName lastName email')
+               .populate('user', 'firstName lastName fullName')
+               .exec();
+               matchedmeetings.push(infomeeting);
+               }
+        }	 
+        
+    }
+    matchedmeetings = checkDuplicateItem(matchedmeetings);
+    return res.status(200).json(matchedmeetings);
 }
 
 async function updateMeeting(req, res) {
     const { id } = req.params;
-    const {date,time,duration,description} = req.body;
+    const {date,time,duration,description,outcome} = req.body;
     const newMeeting = await Meeting.findByIdAndUpdate(
         id,
-        {date,time,duration,description},{new: true}
+        {date,time,duration,description,outcome},{new: true}
     ).exec();
     if (!newMeeting) {
         return res.status(404).json('meeting not found');
@@ -122,5 +152,6 @@ module.exports = {
 	updateMeeting,
 	deleteMeeting,
 	updateContacts,
-	removeContacts,
+    removeContacts,
+    getMeetingsByMultiContacts,
 }
