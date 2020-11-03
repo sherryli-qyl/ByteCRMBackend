@@ -7,7 +7,8 @@ const {
 	updateMeeting,
 	deleteMeeting,
 	updateContacts,
-	removeContacts
+	removeContacts,
+	getMeetingsByMultiContacts,
 } = require('../controllers/meetings');
 
 const router = express.Router();

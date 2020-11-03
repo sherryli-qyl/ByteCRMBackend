@@ -49,13 +49,19 @@ async function getMeetings(req, res) {
 	 return res.status(200).json(matchedmeetings);	
 }
 
+ 
 async function getMeetingsByMultiContacts(req, res){
     const { ids } = req.params;
+    //const contactsId =ids;
     const contactsId = ids.split("&&");
     const matchedmeetings = [];
     const meetings = await Meeting.find();
-    for (i in contactsId) {
+    const finalmeetings = [];
+    const meetingids = [];
+    const value = [];
+   for (let i in contactsId) {
         for(let j in meetings){
+           // if(meetings[j].contacts.includes(contactsId))
             if(meetings[j].contacts.includes(contactsId[i]))
              {
                const infomeeting = await Meeting.findById(meetings[j]._id)
@@ -66,10 +72,27 @@ async function getMeetingsByMultiContacts(req, res){
                }
         }	 
         
-    }
-    matchedmeetings = checkDuplicateItem(matchedmeetings);
-    return res.status(200).json(matchedmeetings);
+   }
+   //value = matchedmeetings._id;
+   return res.status(200).json(matchedmeetings);
+  /* for (let k in matchedmeetings){
+       meetingidstr = JSON.stringify(matchedmeetings[k]._id);
+       if(!meetingids.includes(meetingidstr))
+        {
+            //value.push(meetingids.indexOf(matchedmeetings[k]._id));
+            //value.push(meetingids.includes(matchedmeetings[k]._id));
+            //value.push(typeof(matchedmeetings[k]._id));
+            meetingids.push(matchedmeetings[k]._id);
+            //value.push(typeof(meetingidstr));
+            finalmeetings.push(matchedmeetings[k]);
+        }
+   }*/
+    //return res.status(200).json(finalmeetings);
+   //return res.status(200).json({"result":value});
+   //return res.status(200).json({"result":value});
 }
+
+
 
 async function updateMeeting(req, res) {
     const { id } = req.params;
